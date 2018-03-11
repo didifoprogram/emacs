@@ -5,7 +5,7 @@
     :config
     (require 'spaceline-config)
     (setq powerline-default-separator (quote arrow))
-    (spaceline-spacemacs-theme))
+    (spaceline-emacs-theme))
 #+END_SRC
 * Theme
 #+BEGIN_SRC emacs-lisp
