@@ -1,0 +1,39 @@
+* Spaceline
+#+BEGIN_SRC emacs-lisp
+  (use-package spaceline
+    :ensure t
+    :config
+    (require 'spaceline-config)
+    (setq powerline-default-separator (quote arrow))
+    (spaceline-spacemacs-theme))
+#+END_SRC
+* Theme
+#+BEGIN_SRC emacs-lisp
+  (load-theme 'darktooth t)
+#+END_SRC
+* Font
+#+BEGIN_SRC emacs-lisp
+  (set-frame-font "Hack 10" nil t)
+#+END_SRC
+
+* Simple Configs
+#+BEGIN_SRC emacs-lisp
+  (menu-bar-mode -1)
+  (tool-bar-mode -1)
+  (setq ns-use-srgb-colorspace t)
+  (add-to-list 'load-path' "~/.emacs.d/lisp/")
+  ;(load "xresources-theme")
+  (add-to-list 'package-archives '("org" . "https://orgmode.org/elpa/") t)
+  (global-linum-mode t)
+#+END_SRC
+
+* Better Defaults
+#+BEGIN_SRC emacs-lisp
+  (use-package better-defaults
+    :ensure t)
+#+END_SRC
+
+* Org
+#+BEGIN_SRC emacs-lisp
+  (use-package org)
+#+END_SRC
