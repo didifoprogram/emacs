@@ -13,7 +13,7 @@
 #+END_SRC
 * Font
 #+BEGIN_SRC emacs-lisp
-  (set-frame-font "Hack 11" nil t)
+  (set-default-font "Iosevka 13" nil t)
 #+END_SRC
 
 * Simple Configs

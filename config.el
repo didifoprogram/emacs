@@ -7,7 +7,7 @@
 
 (load-theme 'darktooth t)
 
-(set-frame-font "Hack 11" nil t)
+(set-default-font "Iosevka 13" nil t)
 
 (menu-bar-mode -1)
 (tool-bar-mode -1)
@@ -80,3 +80,5 @@
  ("C-c \"" . wrap-with-double-quotes)
  ("C-c _"  . wrap-with-underscores)
  ("C-c `"  . wrap-with-back-quotes))
+
+
