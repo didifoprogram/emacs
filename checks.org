@@ -8,15 +8,16 @@
   - Deque
 
 
-* Use The ? : operator
+*** Use The ? : operator
 
-* The java.lang.System includes a static System.arraycopy() method you can use to copy one array to another. 
+*** The java.lang.System includes a static System.arraycopy() method you can use to copy one array to another. 
   
-* Math.min() Math.max()
+*** Math.min() Math.max()
   
-*  The number is a^b and D is its digits. D = 1 + b log10 a
+***  The number is a^b and D is its digits. D = 1 + b log10 a
 
-* (index + number_of_elements) % array.length(); => Last spot available in an array, circularly.
+*** (index + number_of_elements) % array.length(); => Last spot available in an array, circularly.
+
 
 * Small tips
 
