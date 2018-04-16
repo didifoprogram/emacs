@@ -18,6 +18,7 @@
 
 *** (index + number_of_elements) % array.length(); => Last spot available in an array, circularly.
 
+*** Integer.parseInt(some_string, 2); convert binary String to decimal passing the base.
 
 * Small tips
 

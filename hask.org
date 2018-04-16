@@ -1,0 +1,311 @@
+* CH 1
+  λ: expressions, variables, and abstractions
+  
+  Expression can be a variable name, an abstractions, or a combination of those things.
+
+  Variables have no meaning or value; placeholders for inputs.
+
+  An abstraction is a function. It is a lambda term that has a
+  head (a lambda) and a body and is applied to an argument. An
+  argument is an input value.
+  
+  The head of the function is a 𝜆 (lambda) followed by a variable
+  name. The body of the function is another expression. So, a
+  simple function might look like this:
+  
+  𝜆𝑦.𝑦
+  
+
+  λ x . x
+  ^─┬─^
+    └────── extent of the head of the lambda.
+
+  λ x . x
+    ^────── the single parameter of the
+            function. This binds any
+            variables with the same name
+            in the body of the function.
+
+  λ x . x
+        ^── body, the expression the lambda
+            returns when applied. This is a
+            bound variable.
+
+
+  The dot (.) separates the parameters of the lambda from
+  the function body.
+  
+** Beta reduction
+   Let’s use the function we had above:
+   𝜆𝑦.𝑦
+   
+   We’ll do our first beta reduction using a number.2 We apply
+   the function above to 2, substitute 2 for each bound variable
+   in the body of the function, and eliminate the head:
+   (𝜆𝑦.𝑦) 2
+  
+   Let’s use an example that mixes some arithmetic into our
+   lambda calculus. We use the parentheses here to clarify that
+   the body expression is 𝑦+1. In other words, we are not applying
+   the function to the 1:
+   (𝜆𝑦.𝑦 + 1)
+
+   (𝜆x.x)(𝜆y.y)
+   [x := (𝜆y.y)] Indicate thath (𝜆y.y) will be substituted for all occorrences of x.
+           𝜆y.y
+
+           
+   (𝜆x.x)(𝜆y.y)z
+
+   its the same as : ((𝜆x.x)(𝜆y.y))z
+
+   reduction: 
+
+   ((𝜆x.x)(𝜆y.y))z
+   [x := (𝜆y.y)]
+   (𝜆y.y)z
+   [y := z]
+         z
+
+  
+   𝜆x.xy
+   
+   The whole abstraction can be applied to an agrument z
+   1. (𝜆x.xy)z
+   2. (𝜆[x := z].xy)
+   3. zy
+
+
+   "multiple" argument lambda:
+   1. 𝜆xy.xy
+   2. (𝜆xy.xy) 1 2
+   3. (𝜆x.(𝜆y.xy)) 1 2
+   4. [x ∶= 1]
+   5. (𝜆y.1y) 2
+   6. [y ∶= 2]
+   7. 1 2
+      
+
+   Another one:
+   1. 𝜆xy.xy
+   2. (𝜆xy.xy)(𝜆z.a) 1
+   3. (𝜆x.(𝜆y.xy)(𝜆z.a)1
+   4. [x := (𝜆z.a)]
+   5. (𝜆y.(𝜆z.a)y) 1
+   6. [y := 1]
+   7. (𝜆z.a) 1
+   8. [z := 1] But there is no z in the body of the functions, so we eliminate the head
+   and the result is 'a'.
+   9. a
+
+
+   Another one:
+   1. (𝜆xyz.xz(yz))(𝜆mn.m)(𝜆p.p)
+
+   2. (𝜆x.𝜆y.𝜆z.xz(yz))(𝜆m.𝜆n.m)(𝜆p.p)
+      We've not reduces or applied anything here, but made the currying explicit.
+   
+   3. (𝜆y.𝜆z.(𝜆m.𝜆n.m)z(yz))(𝜆p.p)
+      Our first reduction step was to apply the outermost lambda,
+      which was binding the x, to the first argument, (𝜆m.𝜆n.m).
+
+   4. (𝜆z.(𝜆m.𝜆n.m)(z)((𝜆p.p)z))
+      We applied the y and replaced the single occurrence of y with the next argument,
+      the term (𝜆p.p). The outermost lambda binding z is, at this point, irreducible
+      because it has no argument to apply to. What remains is to go inside the terms
+      one layer at a time until we find something reducible.
+
+   5. 𝜆z.(𝜆n.z)((𝜆p.p)z)
+      We can apply the lambda binding m to the argument z. The next thing we can apply is
+      the lambda binding n to the lambda term ((𝜆p.p)z).
+
+   6. 𝜆z.z
+      In the final step, the reduction takes a turn that might look
+      slightly odd. Here the outermost, leftmost reducible term
+      is 𝜆n.z applied to the entirety of ((𝜆p.p)z). As we saw in
+      an example above, it doesn’t matter what 𝑜 got bound to,
+      𝜆n.z unconditionally tosses the argument and returns z.
+      So, we are left with an irreducible lambda expression.
+
+
+
+** Combinators
+   
+   A combinator is a lambda term with no free variables. Combi-
+   nators, as the name suggests, serve only to combine the argu-
+   
+   When every term in the body occours in the head:
+
+   1. 𝜆x.x
+   2. 𝜆xy.x
+   3. 𝜆xyz.xz(yz)
+
+   And the following are not combinators because there's one or more free variables
+   
+   1. 𝜆y.x --- x is free
+   2. 𝜆x.xz --- z is free
+
+
+
+** Divergence
+
+   Not all reducible lambda terms reduce neatly to a beta normal
+   form. This isn’t because they’re already fully reduced, but
+   rather because they diverge. Divergence here means that the
+   reduction process never terminates or ends. Reducing terms
+   should ordinarily converge to beta normal form, and diver-
+   gence is the opposite of convergence, or normal form. Here’s
+   an example of a lambda term called omega that diverges:
+   
+   1. (𝜆x.xx)(𝜆x.xx)
+      x in the first lambda’s head becomes the second lambda
+
+   2. ([x := (𝜆x.xx)]xx)
+      Using [var := expr] to denote what x has been bound to.
+
+   3. (𝜆x.xx)(𝜆x.xx)
+      Substituting (𝜆x.xx) for each occurence of x. We're back to where
+      we started and this redution process never ends
+      - we can say omega diverges.
+
+   This matters in programming because terms that diverge
+   are terms that don’t produce an answer or meaningful result.
+   Understanding what will terminate means understanding what
+   programs will do useful work and return the answer we want.
+
+** Summary
+   
+   The main points you should take away from this chapter are:
+   • Functional programming is based on expressions that in-
+   clude variables or constant values, expressions combined
+   with other expressions, and functions.
+
+   • Functions have a head and a body and are those expres-
+   sions that can be applied to arguments and reduced, or
+   evaluated, to a result.
+
+   • Variables may be bound in the function declaration, and
+   every time a bound variable shows up in a function, it has
+   the same value.
+
+   • All functions take one argument and return one result.
+
+   • Functions are a mapping of a set of inputs to a set of
+   outputs. Given the same input, they always return the
+   same result.
+
+
+** Look for Exercises in Pag. 28-31
+
+
+** Definitions
+   
+   1. The lambda in lambda calculus is the greek letter 𝜆 used
+   to introduce, or abstract, arguments for binding in an expression.
+
+   2. A lambda abstraction is an anonymous function or lambda term
+   (𝜆x.x + 1) 
+   
+   The head of the expression, 𝜆x., abstracts out the term
+   x + 1. We can apply it to any x and recompute different results
+   for each x we applied the lambda to.
+
+   3. Application is how one evaluates or reduces lambdas, this
+   binds the argument to whatever the lambda was applied
+   to. Computations are performed in lambda calculus by
+   applying lambdas to arguments until you run out of ar-
+   guments to apply lambdas to.
+
+   (𝜆x.x)1
+
+   This example reduces to 1, the identity 𝜆x.x was applied
+   to the value 1, x was bound to 1, and the lambda’s body is
+   x, so it just kicks the 1 out. In a sense, applying the 𝜆x.x
+   consumed it. We reduced the amount of structure we had.
+
+   5. Normal order is a common evaluation strategy in lambda
+   calculi. Normal order means evaluating (ie, applying or
+   beta reducing) the leftmost outermost lambdas first, eval-
+   uating terms nested within after you’ve run out of argu-
+   ments to apply. Normal order isn’t how Haskell code is
+   evaluated - it’s call-by-need instead. We’ll explain this more
+
+* Chapter 2
+  
+** mod and rem
+   One key difference here is that, in Haskell (not in all lan-
+   guages), if one or both arguments are negative, the results of
+   mod will have the same sign as the divisor, while the result of
+   rem will have the same sign as the dividend:
+   
+   Prelude> (-5) `mod` 2
+   1
+   
+   Prelude> 5 `mod` (-2)
+   -1
+   
+   Prelude> (-5) `mod` (-2)
+   -1
+   
+   But:
+   Prelude> (-5) `rem` 2
+   -1
+   
+   Prelude> 5 `rem` (-2)
+   1
+   
+   prelude> (-5) `rem` (-2)
+   -1
+   
+** Let and Where
+
+   /let/ intruduces an expression, but /where/ is a declaration and is bound to
+   a surrounding syntactic construct.
+
+** Exercises Chap 2 pag 88-94
+
+** Definitions
+
+   1. The terms argument and parameter are often used inter-
+   changeably. However, it is worthwhile to understand the
+   distinction. A parameter, or formal parameter, represents a
+   value that will be passed to the function when the func-
+   tion is called. Thus, parameters are usually variables. An
+   argument is an input value the function is applied to. A
+   function’s parameter is bound to the value of an argument
+   when the function is applied to that argument.
+   
+   2. An /expression/ is a combination of symbols that conforms
+   to syntactic rules and can be evaluated to some result. In
+   Haskell, an expression is a well-structured combination
+   of constants, variables, and functions. While irreducible
+   constants are technically expressions, we usually refer to
+   those as “values”, so we usually mean “reducible expres-
+   sion” when we use the term /expression/.
+
+   3. A /value/ is an expression that cannot be reduced or evalu-
+   ated any further. 2 * 2 is an expression, but not a value,
+   whereas what it evaluates to, 4, is a value.
+
+   4. A /function/ is a mathematical object whose capabilities are
+   limited to being applied to an argument and returning a
+   result. Functions can be described as a list of ordered pairs
+   of their inputs and the resulting outputs, like a mapping.
+   Given the function f x = x + 2 applied to the argument
+   2, we would have the ordered pair (2, 4) of its input and
+   output.
+
+   5. /Infix/ notation is the style used in arithmetic and logic. Infix
+   means that the operator is placed between the operands
+   or /arguments/. An example would be the plus sign in an
+   expression like 2 + 2.
+
+   6. /Operators/ are functions that are infix by default. In Haskell,
+   operators must use symbols and not alphanumeric characters.
+
+   7. /Syntactic sugar/ is syntax within a programming language
+      designed to make expressions easier to write or read.
+
+
+
+
