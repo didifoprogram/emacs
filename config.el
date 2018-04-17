@@ -1,3 +1,6 @@
+(use-package powerline
+  :ensure t)
+
 (use-package spaceline
   :ensure t
   :config
@@ -5,6 +8,10 @@
   (setq powerline-default-separator (quote arrow))
   (spaceline-emacs-theme))
 
+(use-package gruvbox-theme
+  :ensure t)
+(use-package dracula-theme
+  :ensure t)
 (load-theme 'gruvbox-dark-medium t)
 
 (set-default-font "Hack 12" nil t)
@@ -16,6 +23,10 @@
 (add-to-list 'package-archives '("org" . "https://orgmode.org/elpa/") t)
 (add-hook 'prog-mode-hook 'linum-mode)
 
+(setq make-backup-files nil
+    auto-save-default nil
+    visible-bell nil)
+
 (use-package better-defaults
   :ensure t)
 
@@ -23,8 +34,133 @@
 (use-package org-noter
   :ensure t)
 
-
-
-
-
 (global-unset-key (kbd "C-z"))
+
+(use-package nix-mode
+  :ensure t)
+
+(use-package flycheck
+  :ensure t)
+(add-hook 'after-init-hook #'global-flycheck-mode)
+
+(use-package restart-emacs
+  :ensure t)
+
+(use-package swiper
+:ensure t)
+
+(use-package counsel
+:ensure t)
+
+(use-package ivy
+  :ensure t)
+(ivy-mode 1)
+(setq ivy-use-virtual-buffers t)
+(setq enable-recursive-minibuffers t)
+(global-set-key "\C-s" 'swiper)
+(global-set-key (kbd "C-c C-r") 'ivy-resume)
+(global-set-key (kbd "<f6>") 'ivy-resume)
+(global-set-key (kbd "M-x") 'counsel-M-x)
+(global-set-key (kbd "C-x C-f") 'counsel-find-file)
+(global-set-key (kbd "<f1> f") 'counsel-describe-function)
+(global-set-key (kbd "<f1> v") 'counsel-describe-variable)
+(global-set-key (kbd "<f1> l") 'counsel-find-library)
+(global-set-key (kbd "<f2> i") 'counsel-info-lookup-symbol)
+(global-set-key (kbd "<f2> u") 'counsel-unicode-char)
+(global-set-key (kbd "C-c g") 'counsel-git)
+(global-set-key (kbd "C-c j") 'counsel-git-grep)
+(global-set-key (kbd "C-c k") 'counsel-ag)
+(global-set-key (kbd "C-x l") 'counsel-locate)
+(global-set-key (kbd "C-S-o") 'counsel-rhythmbox)
+(define-key minibuffer-local-map (kbd "C-r") 'counsel-minibuffer-history)
+
+(use-package which-key
+:ensure t)
+(which-key-mode)
+
+(use-package vi-tilde-fringe
+:ensure t)
+(add-hook 'prog-mode-hook 'vi-tilde-fringe-mode)
+
+(use-package toc-org
+:ensure t)
+(add-hook 'org-mode-hook 'toc-org-enable)
+
+(use-package smartparens
+:ensure t)
+(add-hook 'prog-mode-hook 'smartparens-mode)
+
+(use-package rainbow-delimiters
+:ensure t)
+(add-hook 'prog-mode-hook #'rainbow-delimiters-mode)
+
+(use-package popwin
+:ensure t)
+;(popwin-mode 1)
+
+(use-package org-bullets
+:ensure t)
+(add-hook 'org-mode-hook 'org-bullets-mode)
+
+(use-package mwim
+:ensure t)
+(global-set-key (kbd "C-a") 'mwim-beginning)
+(global-set-key (kbd "C-e") 'mwim-end)
+
+(use-package move-text
+:ensure t)
+(move-text-default-bindings)
+
+(use-package link-hint
+  :ensure t
+  :bind
+  ("C-c l o" . link-hint-open-link)
+  ("C-c l c" . link-hint-copy-link))
+
+(use-package ivy-hydra
+:ensure t)
+
+(use-package iedit
+:ensure t)
+
+(use-package hungry-delete
+:ensure t)
+(global-hungry-delete-mode)
+
+(use-package hl-todo
+:ensure t)
+(add-hook 'prog-mode-hook 'hl-todo-mode)
+
+(use-package highlight-parentheses
+:ensure t)
+(global-highlight-parentheses-mode)
+
+(use-package highlight-numbers
+:ensure t)
+(add-hook 'prog-mode-hook 'highlight-numbers-mode)
+
+(use-package golden-ratio
+:ensure t)
+(golden-ratio-mode 1)
+(setq golden-ratio-adjust-factor .8
+      golden-ratio-wide-adjust-factor .8)
+
+(use-package clean-aindent-mode
+:ensure t)
+(defun my-pkg-init()
+  (electric-indent-mode -1)  ; no electric indent, auto-indent is sufficient
+  (clean-aindent-mode t)
+  (setq clean-aindent-is-simple-indent t)
+  (define-key global-map (kbd "RET") 'newline-and-indent))
+(add-hook 'after-init-hook 'my-pkg-init)
+
+(use-package column-enforce-mode
+:ensure t)
+(add-hook 'prog-mode-hook 'column-enforce-mode)
+
+(use-package anzu
+:ensure t)
+(global-anzu-mode +1)
+
+(use-package fill-column-indicator
+:ensure t)
