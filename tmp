@@ -29,7 +29,7 @@ exec-path-from-shell
 expand-region
 ~eyebrowse
 flx
-flx-ido
+-ido
 flycheck
 ghc
 golden-ratio

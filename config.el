@@ -12,7 +12,9 @@
   :ensure t)
 (use-package dracula-theme
   :ensure t)
-(load-theme 'gruvbox-dark-medium t)
+  (use-package doom-themes
+  :ensure t)
+(load-theme 'doom-tomorrow-night t)
 
 (set-default-font "Hack 12" nil t)
 
@@ -26,6 +28,11 @@
 (setq make-backup-files nil
     auto-save-default nil
     visible-bell nil)
+; Highlight tabs and trailing whitespace everywhere
+(setq whitespace-style '(face trailing tabs))
+(custom-set-faces
+'(whitespace-tab ((t (:background "red")))))
+(global-whitespace-mode)
 
 (use-package better-defaults
   :ensure t)
@@ -41,7 +48,6 @@
 
 (use-package flycheck
   :ensure t)
-(add-hook 'after-init-hook #'global-flycheck-mode)
 
 (use-package restart-emacs
   :ensure t)
@@ -164,3 +170,28 @@
 
 (use-package fill-column-indicator
 :ensure t)
+
+(use-package diminish
+:ensure t)
+(diminish 'anzu-mode)
+(diminish 'ivy-mode)
+(diminish 'golden-ratio-mode)
+(diminish 'which-key-mode)
+(diminish 'highlight-parentheses-mode)
+(diminish 'flycheck-mode)
+(diminish 'hungry-delete-mode)
+(diminish 'column-enforce-mode)
+(diminish 'smartparens-mode)
+(diminish 'vi-tilde-fringe-mode)
+
+(use-package ace-window
+:ensure t)
+(global-set-key (kbd "M-o") 'ace-window)
+
+(use-package haskell-mode
+:ensure t)
+
+(use-package exec-path-from-shell
+:ensure t)
+(when (memq window-system '(mac ns x))
+  (exec-path-from-shell-initialize))

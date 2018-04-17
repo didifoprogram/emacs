@@ -20,7 +20,9 @@
     :ensure t)
   (use-package dracula-theme
     :ensure t)
-  (load-theme 'gruvbox-dark-medium t)
+    (use-package doom-themes
+    :ensure t)
+  (load-theme 'doom-tomorrow-night t)
 #+END_SRC
 
 * Font
@@ -40,7 +42,11 @@
   (setq make-backup-files nil
       auto-save-default nil
       visible-bell nil)
-
+  ; Highlight tabs and trailing whitespace everywhere
+  (setq whitespace-style '(face trailing tabs))
+  (custom-set-faces
+  '(whitespace-tab ((t (:background "red")))))
+  (global-whitespace-mode)
 #+END_SRC
 
 * Better Defaults
@@ -67,11 +73,11 @@
   :ensure t)
 #+END_SRC
 
-* Flycheck
+* Flycheck -- DISABLED
 #+BEGIN_SRC emacs-lisp
   (use-package flycheck
     :ensure t)
-  (add-hook 'after-init-hook #'global-flycheck-mode)
+
 #+END_SRC
 
 * Restart-emacs
@@ -250,4 +256,37 @@
 #+BEGIN_SRC emacs-lisp
 (use-package fill-column-indicator
 :ensure t)
+#+END_SRC
+* Diminish
+#+BEGIN_SRC emacs-lisp
+(use-package diminish
+:ensure t)
+(diminish 'anzu-mode)
+(diminish 'ivy-mode)
+(diminish 'golden-ratio-mode)
+(diminish 'which-key-mode)
+(diminish 'highlight-parentheses-mode)
+(diminish 'flycheck-mode)
+(diminish 'hungry-delete-mode)
+(diminish 'column-enforce-mode)
+(diminish 'smartparens-mode)
+(diminish 'vi-tilde-fringe-mode)
+#+END_SRC
+* Ace-window
+#+BEGIN_SRC emacs-lisp
+(use-package ace-window
+:ensure t)
+(global-set-key (kbd "M-o") 'ace-window)
+#+END_SRC
+* Haskell
+#+BEGIN_SRC emacs-lisp
+(use-package haskell-mode
+:ensure t)
+#+END_SRC
+* Exec-path-from-shell
+#+BEGIN_SRC emacs-lisp
+(use-package exec-path-from-shell
+:ensure t)
+(when (memq window-system '(mac ns x))
+  (exec-path-from-shell-initialize))
 #+END_SRC
