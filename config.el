@@ -16,7 +16,7 @@
   :ensure t)
 (load-theme 'doom-tomorrow-night t)
 
-(set-default-font "Hack 12" nil t)
+(set-default-font "Hasklug Nerd Font 12" nil t)
 
 (menu-bar-mode -1)
 (tool-bar-mode -1)
@@ -42,9 +42,6 @@
   :ensure t)
 
 (global-unset-key (kbd "C-z"))
-
-(use-package nix-mode
-  :ensure t)
 
 (use-package flycheck
   :ensure t)
@@ -118,10 +115,10 @@
 (move-text-default-bindings)
 
 (use-package link-hint
-  :ensure t
-  :bind
-  ("C-c l o" . link-hint-open-link)
-  ("C-c l c" . link-hint-copy-link))
+:ensure t 
+:bind
+("C-c l o" . link-hint-open-link)
+("C-c l c" . link-hint-copy-link))
 
 (use-package ivy-hydra
 :ensure t)

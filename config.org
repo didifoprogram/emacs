@@ -27,7 +27,7 @@
 
 * Font
 #+BEGIN_SRC emacs-lisp
-  (set-default-font "Hack 12" nil t)
+  (set-default-font "Hasklug Nerd Font 12" nil t)
 #+END_SRC
 
 * Simple Configs
@@ -38,7 +38,7 @@
   (add-to-list 'load-path' "~/.emacs.d/lisp/")
   (add-to-list 'package-archives '("org" . "https://orgmode.org/elpa/") t)
   (add-hook 'prog-mode-hook 'linum-mode)
-  
+
   (setq make-backup-files nil
       auto-save-default nil
       visible-bell nil)
@@ -65,12 +65,6 @@
 * Disable ctrl z
 #+BEGIN_SRC emacs-lisp
   (global-unset-key (kbd "C-z"))
-#+END_SRC
-
-* nix-mode
-#+BEGIN_SRC emacs-lisp
-(use-package nix-mode
-  :ensure t)
 #+END_SRC
 
 * Flycheck -- DISABLED
@@ -119,24 +113,28 @@
   (global-set-key (kbd "C-S-o") 'counsel-rhythmbox)
   (define-key minibuffer-local-map (kbd "C-r") 'counsel-minibuffer-history)
 #+END_SRC
+
 * Which-key
 #+BEGIN_SRC emacs-lisp
 (use-package which-key
 :ensure t)
 (which-key-mode)
 #+END_SRC
+
 * Vi-tilde-fring
 #+BEGIN_SRC emacs-lisp
 (use-package vi-tilde-fringe
 :ensure t)
 (add-hook 'prog-mode-hook 'vi-tilde-fringe-mode)
 #+END_SRC
+
 * Toc-org
 #+BEGIN_SRC emacs-lisp
 (use-package toc-org
 :ensure t)
 (add-hook 'org-mode-hook 'toc-org-enable)
 #+END_SRC
+
 * Smartparens
   - M-x sp-cheat-sheet will show you all the commands available, with examples.
 #+BEGIN_SRC emacs-lisp
@@ -144,6 +142,7 @@
 :ensure t)
 (add-hook 'prog-mode-hook 'smartparens-mode)
 #+END_SRC
+
 * Rainbow-delimiters
   - M-x customize-group rainbow-delimiters
 #+BEGIN_SRC emacs-lisp
@@ -151,18 +150,21 @@
 :ensure t)
 (add-hook 'prog-mode-hook #'rainbow-delimiters-mode)
 #+END_SRC
+
 * Popwin -- DISABLED
 #+BEGIN_SRC emacs-lisp
 (use-package popwin
 :ensure t)
 ;(popwin-mode 1)
 #+END_SRC
+
 * Org-bullets
 #+BEGIN_SRC emacs-lisp
 (use-package org-bullets
 :ensure t)
 (add-hook 'org-mode-hook 'org-bullets-mode)
 #+END_SRC
+
 * Mwim
 #+BEGIN_SRC emacs-lisp
 (use-package mwim
@@ -170,19 +172,21 @@
 (global-set-key (kbd "C-a") 'mwim-beginning)
 (global-set-key (kbd "C-e") 'mwim-end)
 #+END_SRC
+
 * MoveText
 #+BEGIN_SRC emacs-lisp
 (use-package move-text
 :ensure t)
 (move-text-default-bindings)
 #+END_SRC
+
 * Link-hint
 #+BEGIN_SRC emacs-lisp
 (use-package link-hint
-  :ensure t
-  :bind
-  ("C-c l o" . link-hint-open-link)
-  ("C-c l c" . link-hint-copy-link))
+:ensure t 
+:bind
+("C-c l o" . link-hint-open-link)
+("C-c l c" . link-hint-copy-link))
 #+END_SRC
 
 * Ivy-hydra
@@ -190,35 +194,41 @@
 (use-package ivy-hydra
 :ensure t)
 #+END_SRC
+
 * Iedit
 #+BEGIN_SRC emacs-lisp
 (use-package iedit
 :ensure t)
 #+END_SRC
+
 * Hngry-delete
 #+BEGIN_SRC emacs-lisp
 (use-package hungry-delete
 :ensure t)
 (global-hungry-delete-mode)
 #+END_SRC
+
 * hl-todo
 #+BEGIN_SRC emacs-lisp
 (use-package hl-todo
 :ensure t)
 (add-hook 'prog-mode-hook 'hl-todo-mode)
 #+END_SRC
+
 * Highlight-parentheses
 #+BEGIN_SRC emacs-lisp
 (use-package highlight-parentheses
 :ensure t)
 (global-highlight-parentheses-mode)
 #+END_SRC
+
 * Highlight-numbers
 #+BEGIN_SRC emacs-lisp
 (use-package highlight-numbers
 :ensure t)
 (add-hook 'prog-mode-hook 'highlight-numbers-mode)
 #+END_SRC
+
 * Golden-ratio
 #+BEGIN_SRC emacs-lisp
 (use-package golden-ratio
@@ -227,6 +237,7 @@
 (setq golden-ratio-adjust-factor .8
       golden-ratio-wide-adjust-factor .8)
 #+END_SRC
+
 * Clean-aindent
 #+BEGIN_SRC emacs-lisp
 (use-package clean-aindent-mode
@@ -238,18 +249,21 @@
   (define-key global-map (kbd "RET") 'newline-and-indent))
 (add-hook 'after-init-hook 'my-pkg-init)
 #+END_SRC
+
 * Column-enforce-mode
 #+BEGIN_SRC emacs-lisp
 (use-package column-enforce-mode
 :ensure t)
 (add-hook 'prog-mode-hook 'column-enforce-mode)
 #+END_SRC
+
 * Anzu
 #+BEGIN_SRC emacs-lisp
 (use-package anzu
 :ensure t)
 (global-anzu-mode +1)
 #+END_SRC
+
 * Fill-columns-indicator
   - To toggle graphical indication of the fill column in a buffer,
   use the command fci-mode.
@@ -257,6 +271,7 @@
 (use-package fill-column-indicator
 :ensure t)
 #+END_SRC
+
 * Diminish
 #+BEGIN_SRC emacs-lisp
 (use-package diminish
@@ -272,17 +287,20 @@
 (diminish 'smartparens-mode)
 (diminish 'vi-tilde-fringe-mode)
 #+END_SRC
+
 * Ace-window
 #+BEGIN_SRC emacs-lisp
 (use-package ace-window
 :ensure t)
 (global-set-key (kbd "M-o") 'ace-window)
 #+END_SRC
+
 * Haskell
 #+BEGIN_SRC emacs-lisp
 (use-package haskell-mode
 :ensure t)
 #+END_SRC
+
 * Exec-path-from-shell
 #+BEGIN_SRC emacs-lisp
 (use-package exec-path-from-shell
