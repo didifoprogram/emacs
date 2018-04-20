@@ -9,14 +9,14 @@
   (spaceline-emacs-theme))
 
 (use-package gruvbox-theme
-  :ensure t)
-(use-package dracula-theme
-  :ensure t)
-  (use-package doom-themes
-  :ensure t)
-(load-theme 'doom-tomorrow-night t)
+    :ensure t)
+;  (use-package dracula-theme
+;    :ensure t)
+    (use-package doom-themes
+    :ensure t)
+  (load-theme 'doom-tomorrow-night t)
 
-(set-default-font "Hasklug Nerd Font 12" nil t)
+(set-default-font "Iosevka 13" nil t)
 
 (menu-bar-mode -1)
 (tool-bar-mode -1)
@@ -180,6 +180,7 @@
 (diminish 'column-enforce-mode)
 (diminish 'smartparens-mode)
 (diminish 'vi-tilde-fringe-mode)
+(diminish 'global-whitespace-mode)
 
 (use-package ace-window
 :ensure t)

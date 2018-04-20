@@ -307,3 +307,33 @@
 
 
 
+
+* Chapter 3
+
+** Concatenation
+  #+BEGIN_SRC haskell
+  concat [[1, 2], [2, 3]]
+  [1, 2, 2, 3]
+
+  (++) [1, 2, 3] [4, 5, 6]
+  [1, 2, 3, 4, 5, 6]
+  #+END_SRC
+
+** More list functions
+   - The (:) operator, called /cons/, builds a list
+
+     #+BEGIN_SRC haskell
+     'c' : "hris"
+     'P' : ""
+     #+END_SRC
+
+   - head returns the head or first element of a list:
+     #+BEGIN_SRC haskell
+     head "Papuchon"
+     #+END_SRC
+
+   - tail returns the list with the head chopped off:
+     #+BEGIN_SRC haskell
+     tail "Papuchon"
+     #+END_SRC
+

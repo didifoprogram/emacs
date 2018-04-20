@@ -18,8 +18,8 @@
 #+BEGIN_SRC emacs-lisp
   (use-package gruvbox-theme
     :ensure t)
-  (use-package dracula-theme
-    :ensure t)
+;  (use-package dracula-theme
+;    :ensure t)
     (use-package doom-themes
     :ensure t)
   (load-theme 'doom-tomorrow-night t)
@@ -27,7 +27,7 @@
 
 * Font
 #+BEGIN_SRC emacs-lisp
-  (set-default-font "Hasklug Nerd Font 12" nil t)
+  (set-default-font "Iosevka 13" nil t)
 #+END_SRC
 
 * Simple Configs
@@ -286,6 +286,7 @@
 (diminish 'column-enforce-mode)
 (diminish 'smartparens-mode)
 (diminish 'vi-tilde-fringe-mode)
+(diminish 'global-whitespace-mode)
 #+END_SRC
 
 * Ace-window
