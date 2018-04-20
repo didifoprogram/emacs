@@ -330,10 +330,12 @@
    - head returns the head or first element of a list:
      #+BEGIN_SRC haskell
      head "Papuchon"
+     'P'
      #+END_SRC
 
    - tail returns the list with the head chopped off:
      #+BEGIN_SRC haskell
      tail "Papuchon"
+     "apuchon"
      #+END_SRC
 
