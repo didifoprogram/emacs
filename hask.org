@@ -385,8 +385,7 @@
 
 ** Definitions
 
-   - A String is a sequence of characters. In Haskell, String is represented by a
-   linked-list of Char values, aka [Char].
+   - A String is a sequence of characters. In Haskell, String is represented by a linked-list of Char values, aka [Char].
 
    - A type or datatype is a classification of values or data. Types in Haskell
    determine what values are members of the type or that inhabit the type.
@@ -512,5 +511,202 @@
 
      #+BEGIN_SRC haskell
      data (,) a b = (,) a b
+
+     (,) 8 10
+     (8,10)
+
+     (,) 8 "Julie"
+     (8,"Julie")
+
+     -- Two-tuple has some default convenience functions
+     fst :: (a,b) -> a
+     snd :: (a,b) -> b
+
+     let myTup = (1 :: Integer, "blah")
+
+     -- You can do
+     import Data.Tuple
+     swap myTup
+     -- The result is:
+     ("blah",1)
+
+     -- We can also combine tuples with other expressions:
+     2 + fst (1, 2)
+     3
+
+     2 + snd (1, 2)
+     4
+
+     -- patern matching on tuples:
+     tupFunc :: (Int, [a]) -> (Int, [a]) -> (Int, [a])
+     tupFunc (a, b) (c, d) = ((a + c), (b ++ d))
+
      #+END_SRC
 
+** Lists
+
+   - All elements of a list must be of the same type.
+   - Lists have their own distinct [] syntax.
+   - The number of values that will be in the list isn't specified in the type,
+     unlike tuples where the arity is set in the type and immutable.
+
+     #+BEGIN_SRC haskell
+     p = "Papuchon"
+     awesome = [p, "curry", ":)"]
+     also = ["Quake", "The Simons"]
+
+     -- (++) :: [a] -> [a] -> [a]
+     awesome ++ also
+
+     -- allAwesome :: [[[Char]]]
+     allAwesome = [awesome, also]
+
+     -- concat :: [[a]] -> [a]
+     concat allAwesome
+     #+END_SRC
+
+** Exercises
+   #+BEGIN_SRC haskell
+   -- Exercise 10 pag 170
+   f :: (a, b) -> (c, d) -> ((b, d), (a, c))
+   f x y = ((snd x, snd y), (fst x, fst y))
+   #+END_SRC
+
+   - Correcting syntax
+     #+BEGIN_SRC haskell
+     -- Ex 1
+     x = (+)
+     adds xs = x w  1
+     where w = length xs
+
+     -- Ex 2
+     id x = x
+
+     -- Ex 3
+     f (a, b) = fst (a, b)
+     #+END_SRC
+** Definitions
+
+   - A /tuple/ is an ordered grouping of values. In Haskell, you
+   cannot have a tuple with only one element, but there is a
+   zero tuple also called unit or (). The types of the elements
+   of tuples are allowed to vary, so you can have both (String,
+   String) or (Integer, String). Tuples in Haskell are the usual
+   means of briefly carrying around multiple values without
+   giving that combination its own name.
+
+   - A typeclass is a set of operations defined with respect to
+   a polymorphic type. When a type has an instance of a
+   typeclass, values of that type can be used in the standard
+   operations defined for that typeclass. In Haskell, typeclasses
+   are unique pairings of class and concrete instance.
+   This means that if a given type /a/ has an instance of Eq, it
+   has /only one instance of Eq.
+
+   - Data constructors in Haskell provide a means of creating
+   values that inhabit a given type. Data constructors in
+   Haskell have a type and can either be constant values
+   (nullary) or take one or more arguments, like functions.
+
+   In the following example, Cat is a nullary data constructor
+   for Pet and Dog is a data constructor that takes an argument:
+   #+BEGIN_SRC haskell
+   type Name = String
+
+   data Pet = Cat | Dog Name
+   #+END_SRC
+
+   The data constructors have the following types:
+   Prelude> :t Cat
+   Cat :: Pet
+   Prelude> :t Dog
+   Dog :: Name -> Pet
+
+   - Type constructors in Haskell are not values and can only be
+   used in type signatures. Just as data declarations generate
+   data constructors to create values that inhabit that type,
+   data declarations generate type constructors which can be
+   used to denote that type. In the above example, Pet is the
+   type constructor. A guideline for differentiating the two
+   kinds of constructors is that type constructors always go
+   to the left of the = in a data declaration.
+
+   - /Data declarations/ define new datatypes in Haskell. Data
+   declarations /always/ create a new type constructor, but may
+   or may not create new data constructors. Data declarations
+   are how we refer to the entire definition that begins with
+   the data keyword.
+
+   - A type alias is a way to refer to a type constructor or type
+   constant by an alternate name, usually to communicate something
+   more specific or for brevity.
+   #+BEGIN_SRC haskell
+   type Name = String
+   -- creates a new type alias Name of the
+   -- type String *not* a data declaration,
+   -- just a type alias declaration
+   #+END_SRC
+
+   - /Arity/ is the number of arguments a function accepts. This
+   notion is a little slippery in Haskell as, due to currying, all
+   functions are 1-arity and we handle accepting multiple
+   arguments by nesting functions.
+
+   - Polymorphism in Haskell means being able to write code
+   in terms of values which may be one of several, or any,
+   type. Polymorphism in Haskell is either parametric or
+   constrained. The identity function, id, is an example of a
+   parametrically polymorphic function:
+   #+BEGIN_SRC haskell
+   id :: a -> a
+   id x = x
+   #+END_SRC
+   Here id works for a value of /any/ type because is doesn't use
+   any information specific to a given type or set  of types.
+
+   Another example:
+   #+BEGIN_SRC haskell
+   isEqual :: Eq a => a -> a -> Bool
+   isEqual x y = x == y
+   #+END_SRC
+   isEqual is polymorphico, but /constrained/ or /bounded/ to the set of
+   types which have an instance of the Eq typeclass.
+
+** Names and variables
+*** Names
+    In Haskell there are seven categories of entities that have
+    names: functions, term-level variables, data constructors, type
+    variables, type constructors, typeclasses, and modules. Term-
+    level variables and data constructors exist in your terms. Term
+    level is where your values live and is the code that executes
+    when your program is running. At the type level, which is used
+    during the static analysis & verification of your program, we
+    have type variables, type constructors, and typeclasses. Lastly,
+    for the purpose of organizing our code into coherent groupings
+    across different files, we have modules.
+
+* Chapter 5
+
+** The Function Type
+   #+BEGIN_SRC haskell
+   fst :: (a,b)  ->   a
+   --      [1]  [2]  [3]
+   #+END_SRC
+   1. The first parameter of fst has the type (a, b). Note that
+   the tuple type itself (,) takes two arguments /a/ and /b/.
+
+   2. The function type, (->), has two parameters. One is (a,b)
+   and one is result /a/.
+
+   3. The result of the function, which has type /a/. It’s the same
+   /a/ that was in the tuple (a, b).
+
+** Currying
+   Currying refers to the nesting of multiple functions, each accepting one
+   argument and returning one result, to allow the illusion of multiple-parameter functions.
+   #+BEGIN_SRC haskell
+   data (->) a b
+   #+END_SRC
+   - If you are constructing a function that requires multiple parameters,
+   then the /b/ can be another function (the /a/ can be another function as well).
+   In that case, just like in lambda abstractions that have multiple heads, they are nested.
