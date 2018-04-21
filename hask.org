@@ -385,14 +385,13 @@
 
 ** Definitions
 
-   1. A String is a sequence of characters. In Haskell, String is
-   represented by a linked-list of Char values, aka [Char].
+   1. A String is a sequence of characters. In Haskell, String is represented by a
+   linked-list of Char values, aka [Char].
 
-   2. A type or datatype is a classification of values or data.
-   Types in Haskell determine what values are members
-   of the type or that inhabit the type. Unlike in other languages,
-   datatypes in Haskell by default do not delimit theoperations that
-   can be performed on that data.
+   2. A type or datatype is a classification of values or data. Types in Haskell
+   determine what values are members of the type or that inhabit the type.
+   Unlike in other languages, datatypes in Haskell by default do not
+   delimit theoperations that can be performed on that data.
 
    3. Concatenation is the joining together of sequences of values.
    Often in Haskell this is meant with respect to the [], or list,
@@ -515,4 +514,3 @@
      data (,) a b = (,) a b
      #+END_SRC
 
-     
