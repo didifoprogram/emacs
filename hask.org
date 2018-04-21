@@ -229,7 +229,17 @@
 
 
 * Chapter 2
-
+** Infix operators
+*** Associativity and precedence
+    #+BEGIN_SRC haskell
+    :info (^)
+    infixr  8   ^
+    -- example of infixr
+    2 ^ 3 ^ 4 == 2 ^ (3 ^ 4) -- True
+    2 ^ 3 ^ 4 == (2 ^ 3) ^ 4 -- False
+    -- example of infixl
+    2 * 3 * 4 == (2 * 3) * 4 -- True
+    #+END_SRC
 ** mod and rem
    One key difference here is that, in Haskell (not in all lan-
    guages), if one or both arguments are negative, the results of
@@ -317,11 +327,17 @@
 
   (++) [1, 2, 3] [4, 5, 6]
   [1, 2, 3, 4, 5, 6]
+
+  ["hello" ++ " world"]
+  ["hello world"]
+
+  concat ["hello", " world"]
+  "hello world"
   #+END_SRC
 
 ** More list functions
-   - The (:) operator, called /cons/, builds a list
 
+   - The (:) operator, called /cons/, builds a list
      #+BEGIN_SRC haskell
      'c' : "hris"
      'P' : ""
@@ -339,3 +355,164 @@
      "apuchon"
      #+END_SRC
 
+   - take returns the specified number of elements from the list, starting from the left:
+     #+BEGIN_SRC haskell
+     take 2 "Papuchon"
+     "Pa"
+     #+END_SRC
+
+   - drop returns the remainder of the list after the specified number of elements has been droped:
+     #+BEGIN_SRC haskell
+     drop 4 "Papuchon"
+     "chon"     drop 9001 "Papuchon"
+     ""
+     #+END_SRC
+
+   - Infix operator (!!), returns the element that is in the specified position, start from 0:
+     #+BEGIN_SRC haskell
+     "Papuchon" !! 4
+     'c'
+     #+END_SRC
+
+*** NOTE
+
+   Note that while all these functions are standard Prelude functions,
+   many of them are considered unsafe.
+   They are unsafe because they do not cover the case where they are given an
+   empty list as input. Instead they throw out an error message, or /exception/.
+
+** EXERCISES Pag 122 -
+
+** Definitions
+
+   1. A String is a sequence of characters. In Haskell, String is
+   represented by a linked-list of Char values, aka [Char].
+
+   2. A type or datatype is a classification of values or data.
+   Types in Haskell determine what values are members
+   of the type or that inhabit the type. Unlike in other languages,
+   datatypes in Haskell by default do not delimit theoperations that
+   can be performed on that data.
+
+   3. Concatenation is the joining together of sequences of values.
+   Often in Haskell this is meant with respect to the [], or list,
+   datatype, which also applies to String which is[Char].
+   The concatenation function in Haskell is (++) which has type [a] -> [a] -> [a].
+
+   4. Scope is where a variable referred to by name is valid.
+   Another word used with the same meaning is visibility,
+   because if a variable isn’t visible it’s not in scope.
+
+   5. Local bindings are bindings local to particular expressions.
+   The primary delineation here from top level bindings is that local
+   bindings cannot be imported by other programs or modules.
+
+   6. Top level bindings in Haskell are bindings that stand outside
+   of any other declaration. The main feature of top-level bindings is that
+   they can be mande availabe to other modules within your program or to other
+   people's programs.
+
+
+
+* Chapter 4
+
+** Anatomy of a data declaration
+
+   We will start with a basic datatype to see how datatypes are
+   structured and get acquainted with the vocabulary. Bool isn’t a
+   datatype we’ve seen yet in the book, but it provides for truth
+   values. It is named after the great logician George Boole and
+   the system of logic named for him. Because there are only two
+   truth values, there are only two data constructors:
+
+   #+BEGIN_SRC haskell
+   data Bool = False | True
+   --    [1]    [2] [3] [4]
+   #+END_SRC
+
+  1. Type constructor for datatype Bool. This is the name of the type and shows up
+  in type signatures.
+
+  2. Data constructor for the value False.
+
+  3. Pipe | indicates a sum type or logical disjunction: or. So, a Bool value is
+  True or False.
+
+  4. Data constructor for the value True.
+
+  The whole thing is called a data declaration. Data declarations
+  do not always follow precisely the same pattern — there
+  are datatypes that use logical conjunction (and) instead of disjunction,
+  and some type constructors and data constructors may have arguments.
+
+** Fractional Numbers
+
+   Some computations involving numbers will be fractional
+   rather than integral. A good example of this is the division
+   function (/) which has type:
+
+   (/) :: Fractional a => a -> a -> a
+
+   The notation Fractional a => denotes a typeclass constraint.
+   It tells us the type variable /a/ must implement the Fractional typeclass.
+   Whatever type of number /a/ turns out to be, it must
+   be a type that has an instance of the Fractional typeclass; that
+   is, there must be a declaration of how the operations from
+   that typeclass will work for the type.
+
+** Comparing Values
+
+   (==) :: Eq a => a -> a -> Bool
+
+   (<) :: Ord a => a -> a -> Bool
+
+   #+BEGIN_SRC haskell
+   ['a', 'b'] > ['b', 'a']
+   False
+
+   'b' > 'a'
+   True
+
+   [1, 2] > [2, 1]
+   False
+
+   "Chris" > "Julie"
+   False
+   #+END_SRC
+
+** Conditionals with if-then-else
+
+   if CONDITION
+   then EXPRESSION_A
+   else EXPRESSION_B
+
+   Here’s how it reduces:
+
+   #+BEGIN_SRC haskell
+   -- Given:
+   x = 0
+
+   if (x + 1 == 1) then "AWESOME" else "wut"
+   -- x is zero
+
+   if (0 + 1 == 1) then "AWESOME" else "wut"
+   -- reduce 0 + 1 so we can see
+
+   -- if it's equal to 1
+   if (1 == 1) then "AWESOME" else "wut"
+
+   -- Does 1 equal 1?
+   if True then "AWESOME" else "wut"
+   -- pick the branch based on the Bool value
+   #+END_SRC
+** Tuples
+   - The number of values in a tuple is known as the tuple's /arity/.
+   - The values within a tuple do not have to be of the same type.
+   - The two-tuple is expressed at both the type level and term level with the
+     constructor (,). It looks like this:
+
+     #+BEGIN_SRC haskell
+     data (,) a b = (,) a b
+     #+END_SRC
+
+     
