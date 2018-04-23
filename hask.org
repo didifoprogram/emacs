@@ -1,4 +1,4 @@
-* CH 1
+* Chapter 1
   λ: expressions, variables, and abstractions
 
   Expression can be a variable name, an abstractions, or a combination of those things.
@@ -227,7 +227,6 @@
    ments to apply. Normal order isn’t how Haskell code is
    evaluated - it’s call-by-need instead. We’ll explain this more
 
-
 * Chapter 2
 ** Infix operators
 *** Associativity and precedence
@@ -313,7 +312,6 @@
 
    7. /Syntactic sugar/ is syntax within a programming language
       designed to make expressions easier to write or read.
-
 
 
 
@@ -409,7 +407,6 @@
    of any other declaration. The main feature of top-level bindings is that
    they can be mande availabe to other modules within your program or to other
    people's programs.
-
 
 
 * Chapter 4
@@ -710,3 +707,38 @@
    - If you are constructing a function that requires multiple parameters,
    then the /b/ can be another function (the /a/ can be another function as well).
    In that case, just like in lambda abstractions that have multiple heads, they are nested.
+
+   - Let's check the type signature for addition:
+     #+BEGIN_SRC haskell
+     (+) :: Num a => a -> a -> a
+     #+END_SRC
+   - Functions in Haskell are nested like Matryoshka
+   dolls in order to accept “multiple” arguments. The way
+   the (->) type constructor for functions works means a -> a -> a
+   represents successive function applications, each
+   taking one argument and returning one result. The difference
+   is that the function at the outermost layer is returning
+   another function that accepts the next argument.
+   This is called currying.
+
+   - The (->) is an infix operator and right associative, so:
+   #+BEGIN_SRC haskell
+   map :: (a -> b) -> [a] -> [b]
+
+   -- associates into
+   map :: (a -> b) -> ([a] -> [b])
+   #+END_SRC
+   - This is to group the parameters into argument and result, since there can only
+   be one argument and one result per arrow. Since all the arrows have the same precedence,
+   the associativity does not change the precedence or order of evaluation.
+
+   - Remember, when we have a lambda expression that appears to have two parameters,
+   they are nested lambdas. Applying the expression to one argument returns a function that
+   awaits application to a second argument.
+
+   - The type constructor for functions and the types we sse above are the same thing,
+   but written in Haskell. When there are “two arguments” in Haskell,
+   we apply our function to an argument, just like when we apply a lambda expression to an
+   argument, and then return a result that is a function and needs to be applied to a second argument.
+
+** Partial application
