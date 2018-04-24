@@ -742,3 +742,4 @@
    argument, and then return a result that is a function and needs to be applied to a second argument.
 
 ** Partial application
+   
