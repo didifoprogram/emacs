@@ -315,7 +315,6 @@
 
 
 
-
 * Chapter 3
 
 ** Concatenation
@@ -407,7 +406,6 @@
    of any other declaration. The main feature of top-level bindings is that
    they can be mande availabe to other modules within your program or to other
    people's programs.
-
 
 * Chapter 4
 
@@ -742,4 +740,74 @@
    argument, and then return a result that is a function and needs to be applied to a second argument.
 
 ** Partial application
-   
+
+   #+BEGIN_SRC haskell
+   (+) :: Num a => a -> a -> a
+   sumA = (+) 10
+   sumB x = sumA x
+   -- sumB is equal to 22
+
+   addStuff :: Integer -> Integer -> Integer
+   -- its the same as:
+   addStuff :: Integer -> (Integer -> Integer)
+   #+END_SRC
+** Manual currtying and uncurrying
+   - /Uncurrying/ means un-nesting the functions and replacing the two functions with a tuple
+     of two values.
+
+   - If you uncurry (+), the type changes from Num a => a -> a -> a to Num a => (a,a) -> a
+     which better fits the description "takes two arguments, returns one result".
+
+   - Uncurried functions: One function, many arguments.
+
+   - Curried functions: Many functions, one argument apiece.
+
+     #+BEGIN_SRC haskell
+     nonsense :: Bool -> Integer
+     nonsense True = 805
+     nonsense False = 31337
+
+     curriedFunction :: Integer -> Bool -> Integer
+     curriedFunction i b = i + (nonsense b)
+
+     uncurriedFunction :: (Integer, Bool) -> Integer
+     uncurriedFunction (i,b) = i + (nonsense b)
+
+     anonymous :: Integer -> Bool -> Integer
+     anonymous = \i b -> i + (nonsense b)
+
+     anonNested :: Integer -> Bool -> Integer
+     anonNested = \i -> \b -> i + (nonsense b)
+     #+END_SRC
+
+     - Functions that /seem/ to accept multiple arguments such as with a -> a -> a -> a are
+       /higher-order functions/: they yield more functions values as each argument is applied
+       until there are no more (->) type constructors and it terminates in a non-function value.
+
+
+** Currying and uncurrying existing functions
+
+  - Consider the following example for currying:
+    Prelude> let curry f a b = f (a, b)
+    Prelude> :t curry
+    curry :: ((t1, t2) -> t) -> t1 -> t2 -> t
+    Prelude> :t fst
+    fst :: (a, b) -> a
+    Prelude> :t curry fst
+    curry fst :: t -> b -> t
+    Prelude> fst (1, 2)
+    1
+    Prelude> curry fst 1 2
+    1
+
+
+  - Then for uncurrying:
+    Prelude> let uncurry f (a, b) = f a b
+    Prelude> :t uncurry
+    uncurry :: (t1 -> t2 -> t) -> (t1, t2) -> t
+    Prelude> :t (+)
+    (+) :: Num a => a -> a -> a
+    Prelude> (+) 1 2
+    3
+    Prelude> uncurry (+) (1,2)
+    3

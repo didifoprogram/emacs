@@ -310,3 +310,44 @@
   (exec-path-from-shell-initialize))
 #+END_SRC
 
+* haskell-lambda
+#+BEGIN_SRC emacs-lisp
+(defun pretty-lambdas-haskell ()
+  (font-lock-add-keywords
+   nil `((,(concat "\\(" (regexp-quote "\\") "\\)")
+          (0 (progn (compose-region (match-beginning 1) (match-end 1)
+                                    ,(make-char 'greek-iso8859-7 107))
+                    nil))))))
+
+(add-hook 'haskell-mode-hook 'pretty-lambdas-haskell)
+#+END_SRC
+* font-test
+#+BEGIN_SRC emacs-lisp
+(defun font-existsp (font)
+  "Check to see if the named FONT is available."
+  (if (null (x-list-fonts font))
+      nil t))
+
+(require 'cl)
+(defun font-avail (fonts)
+  "Finds the available fonts."
+  (remove-if-not 'font-existsp fonts))
+
+(defvar font-preferences
+      '("PragmataPro"
+        "Iosevka"
+        "Hasklug Nerd Font"
+        "Inconsolata"
+        "DejaVu Sans Mono"
+        "Bitstream Vera Sans Mono"
+        "Anonymous Pro"
+        "Menlo"
+        "Consolas"))
+
+(unless (eq window-system nil)
+  (let ((fonts (font-avail font-preferences)))
+    (unless (null fonts)
+      (set-face-attribute
+       'default nil :font
+       (car fonts)))))
+#+END_SRC
