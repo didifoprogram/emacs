@@ -351,3 +351,7 @@
        'default nil :font
        (car fonts)))))
 #+END_SRC
+* SubWord
+#+BEGIN_SRC emacs-lisp
+(add-hook 'haskell-mode-hook 'subword-mode)
+#+END_SRC

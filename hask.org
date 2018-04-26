@@ -244,23 +244,18 @@
    guages), if one or both arguments are negative, the results of
    mod will have the same sign as the divisor, while the result of
    rem will have the same sign as the dividend:
-   
+
    Prelude> (-5) `mod` 2
    1
-   
    Prelude> 5 `mod` (-2)
    -1
-   
    Prelude> (-5) `mod` (-2)
    -1
-   
    But:
    Prelude> (-5) `rem` 2
    -1
-   
    Prelude> 5 `rem` (-2)
    1
-
    prelude> (-5) `rem` (-2)
    -1
 
@@ -312,7 +307,6 @@
 
    7. /Syntactic sugar/ is syntax within a programming language
       designed to make expressions easier to write or read.
-
 
 
 * Chapter 3
@@ -784,7 +778,6 @@
        /higher-order functions/: they yield more functions values as each argument is applied
        until there are no more (->) type constructors and it terminates in a non-function value.
 
-
 ** Currying and uncurrying existing functions
 
   - Consider the following example for currying:
@@ -800,7 +793,6 @@
     Prelude> curry fst 1 2
     1
 
-
   - Then for uncurrying:
     Prelude> let uncurry f (a, b) = f a b
     Prelude> :t uncurry
@@ -811,3 +803,44 @@
     3
     Prelude> uncurry (+) (1,2)
     3
+** Sectioning
+
+   - The term /sectioning/ specifically refers to partial application of infix operators,
+     which has a special syntax and allows you to choose whether the argument you're partially
+     applying the operator to is the first or second argument:
+
+     Prelude> let x = 5
+     Prelude> let y = (2^)
+     Prelude> let z = (^2)
+     Prelude> y x
+     32
+     Prelude> z x
+     25
+
+     This does not only work with arithmetic:
+
+     Prelude> let celebrate = (++ " woot!")
+     Prelude> celebrate "naptime"
+     "naptime woot!"
+     Prelude> celebrate "dogs"
+     "dogs woot!"
+
+** Exercises: pag 204
+   #+BEGIN_SRC haskell
+   -- Ex 7
+   kessel :: (Ord a, Num b) => a -> b -> a; kessel = undefined
+   kessel 1 2 :: (Num a, Ord a) => a
+   #+END_SRC
+** Polymorphism
+** Exercises: Parametricity pag 213
+** Polymorphic constants
+   #+BEGIN_SRC haskell
+   (-10) -- is a polymorphic constant. It will have to resolve into a concrete type at some point.
+
+   -- We can force the compiler to be more specific about the types of numbers:
+   x = 5 + 5 :: Int
+   #+END_SRC
+
+** Type inference
+** Exercises pag 221
+** Chapter Exercises
