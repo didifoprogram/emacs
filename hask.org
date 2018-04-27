@@ -308,7 +308,6 @@
    7. /Syntactic sugar/ is syntax within a programming language
       designed to make expressions easier to write or read.
 
-
 * Chapter 3
 
 ** Concatenation
@@ -844,3 +843,81 @@
 ** Type inference
 ** Exercises pag 221
 ** Chapter Exercises
+   #+BEGIN_SRC haskell
+   c' :: a -> b -> b
+
+   -- ex 6 pag 234
+   co :: (b -> c) -> (a -> b) -> a -> c
+   co f g = \a -> f (g a)
+   co f g a = f (g a)
+   #+END_SRC
+** Definitions
+
+   - /Polymorphism/:
+     Refers to type variables which may refer to more than once concrete type.
+
+   - /Type inference/:
+     /Infer/ principal types from terms without needing explicit type annotations.
+     With respect to Haskell, the principal type is the most generic type which still typechecks.
+     More generally, Principal type is a property of the type system you’re interacting with.
+     Principal typing holds for that type system if a type can be found for a term in an environment
+     for which all other types for that term are instances of the principal type.
+
+     #+BEGIN_SRC haskell
+     -- Given the inferred types
+     a
+     Num a => a
+     Int
+
+     -- The principal type here is the
+     -- parametrically polymorphic 'a'.
+
+     -- Given these types
+     (Ord a, Num a) => a
+     Integer
+
+     -- The principal type is
+     -- (Ord a, Num a) => a
+     #+END_SRC
+
+   - /Type variable/ is a way to refer to an unspecified type or set of types in Haskell type
+     signatures. Type variables ordinarily will be equal to themselves throughout a type signature.
+     Let us consider examples:
+     #+BEGIN_SRC haskell
+     id :: a -> a
+
+     -- One type variable 'a' that occours twice,
+     -- once as an argument, once as a result.
+     -- Parametrically polymorphic, could be
+     -- strictly anything.
+
+     (+) :: Num a => a -> a -> a
+
+     -- One type variable 'a', constrained
+     -- to needing an instance of Num. Two
+     -- arguments, one result.
+     -- All the same type.
+     #+END_SRC
+
+   - /Typeclass/
+
+   - /Parametricity/ states that the behavior of a function will be uniform across all concrete
+     applications of the function. for example:
+     #+BEGIN_SRC haskell
+     id :: a -> a
+     #+END_SRC
+     - Can be understood to have the same exact behavior every type in Haskell without needing
+       to see how it was writter. It is the same property that tell us:
+       #+BEGIN_SRC haskell
+       const :: a -> b -> a
+       #+END_SRC
+     - const /must/ return the first value - parametricity and the definition of the type requires it!
+
+       #+BEGIN_SRC haskell
+       f :: a -> a -> a
+       #+END_SRC
+     - Here, f  can only return the first or second value, nothing
+       else, and it will always return one or the other consistently without changing.
+       If the function 𝑔 made use of (+) or (*), its type would necessarily
+       be constrained by the typeclass Num and thus be an example of ad-hoc, rather than
+       parametric, polymorphism.

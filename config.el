@@ -181,6 +181,7 @@
 (diminish 'smartparens-mode)
 (diminish 'vi-tilde-fringe-mode)
 (diminish 'global-whitespace-mode)
+(diminish 'subword-mode)
 
 (use-package ace-window
 :ensure t)
@@ -230,3 +231,5 @@
       (set-face-attribute
        'default nil :font
        (car fonts)))))
+
+(add-hook 'haskell-mode-hook 'subword-mode)
