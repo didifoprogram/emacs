@@ -287,6 +287,7 @@
 (diminish 'smartparens-mode)
 (diminish 'vi-tilde-fringe-mode)
 (diminish 'global-whitespace-mode)
+(diminish 'subword-mode)
 #+END_SRC
 
 * Ace-window
