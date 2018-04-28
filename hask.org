@@ -916,8 +916,122 @@
        #+BEGIN_SRC haskell
        f :: a -> a -> a
        #+END_SRC
-     - Here, f  can only return the first or second value, nothing
+     - Here, f can only return the first or second value, nothing
        else, and it will always return one or the other consistently without changing.
-       If the function 𝑔 made use of (+) or (*), its type would necessarily
+       If the function f made use of (+) or (*), its type would necessarily
        be constrained by the typeclass Num and thus be an example of ad-hoc, rather than
        parametric, polymorphism.
+
+       #+BEGIN_SRC haskell
+       blahFunc :: b -> String
+       #+END_SRC
+
+     - blahFunc totally ignores its argument and is effectively a constant value of type String
+       which requires a throw-away argument for no reason.
+
+       #+BEGIN_SRC haskell
+       convList :: a -> [a]
+       #+END_SRC
+
+     - Unless the result is [], the resulting list has values that are all the same value.
+       The list will always be the same length.
+
+   - /Ad-hoc polymorphism/ (sometimes called "constrained polymorphism")
+     #+BEGIN_SRC haskell
+     (+) :: Num a => a -> a -> a
+
+     -- the above functions is leveraging
+     -- ad-hoc polymorphism via the
+     -- Num typeclass
+
+     c' :: a -> a -> a
+
+     -- This functions is not,
+     -- it's parametriclay polymorphic in 'a'.
+     #+END_SRC
+
+   - A module is the unit of organization that the Haskell programming language uses to collect
+     together declarations of values, functions, data types, typeclasses, and typeclass
+     instances. Any time you use “import” in Haskell, you are importing declarations from a module.
+     Let us look at an example from the chapter exercises:
+
+     #+BEGIN_SRC haskell
+     {-# LANGUAGE NoMonomorphismRestriction #-}
+
+     module DetermineTheType where
+     --     ^ name of module
+     #+END_SRC
+     - Here we made our Haskell source file have a module and
+       we named it DetermineTheType. We included a directive to
+       the compiler to disable the monomorphism restriction before
+       we declared the module. Also consider the following example
+       using import:
+
+       #+BEGIN_SRC haskell
+       import Data.Aeson (encode)
+       --     ^ the module Data.Aeson
+       import Database.Persist
+       --     ^ the module Database.Persist
+       #+END_SRC
+       - In the above example, we are importing the function encode declared in the module
+         Data.Aeson along with any typeclass instances. With the module Database.Persist we
+         are importing /everything/ it makes available.
+* Chapter 6
+** Eq typeclass
+    #+BEGIN_SRC haskell
+    (==) :: Eq a => a -> a -> Bool
+
+    -- if we specialized (==)
+    -- for [Char] aka String
+    (==) :: [Char] -> [Char] -> Bool
+
+    (==) "cat"
+    :: [Char] -> Bool
+
+    (==) "cat" "cat"
+    :: Bool
+    #+END_SRC
+
+  - Trivial typeclass
+    #+BEGIN_SRC haskell
+    data Trivial = Trivial'
+
+    instance Eq Trivial where
+    Trivial' == Trivial' = True
+    #+END_SRC
+** Partial Function
+   - A partial functions is one that doesn't handle all the possible cases, so there are possible
+     scenarios in which we haven't defined any way for the code to evaluate.
+     #+BEGIN_SRC haskell
+     f :: Int -> Bool
+     f 2 = True
+     -- With this, if you pass f 3, you'll get a error because  you're not handling all inputs
+     -- that aren't number 2
+
+     f :: Int -> Bool
+     f 1 = True
+     f 2 = True
+     -- Same thing, but now we handle the input 1
+
+     f :: Int -> Bool
+     f 1 = True
+     f 2 = True
+     f _ = False
+     -- Now we have an uncondicional case that matches everything.
+     #+END_SRC
+
+     - Another solution is to use a datatype that isn't /huge/ lika Int if you only have a few
+       cases you want to consider.
+
+** Sometimes we need to ask for more
+   #+BEGIN_SRC haskell
+   -- datatype declaration
+   data Identity a = Identity a
+
+   -- instance definition
+   instance Eq a => Eq (Identity a) where
+   (==) (Identity v) (Identity v') = v == v'
+   #+END_SRC
+
+** Exercises: Eq Instances
+
