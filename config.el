@@ -233,3 +233,5 @@
        (car fonts)))))
 
 (add-hook 'haskell-mode-hook 'subword-mode)
+
+(global-hl-line-mode +1)

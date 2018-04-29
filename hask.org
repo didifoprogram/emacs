@@ -1034,4 +1034,292 @@
    #+END_SRC
 
 ** Exercises: Eq Instances
+** Num
+*** Integral
+    #+BEGIN_SRC haskell
+    class (Real a, Enum a) => Integral a where
+    quot :: a -> a -> a
+    rem :: a -> a -> a
+    div :: a -> a -> a
+    mod :: a -> a -> a
+    quotRem :: a -> a -> (a, a)
+    divMod :: a -> a -> (a, a)
+    toInteger :: a -> Integer
+    #+END_SRC
+*** Fractional
+    - Num is a superclass of Fractional. The Fractional typeclass is defined as follows:
+      #+BEGIN_SRC haskell
+      class (Num a) => Fractional a where
+      (/)          :: a -> a -> a
+      recip        :: a -> a
+      fromRational :: Rational -> a
+      #+END_SRC
+** Type-defaulting typeclasses
+   - When you don't specify the concrete type..
+     #+BEGIN_SRC haskell
+     (/) :: Fractional a => a -> a -> a
+     -- defaults to
+     (/) :: Double -> Double -> Double
 
+     -- and
+
+     div :: Integral a => a -> a -> a
+     -- defaults to
+     div :: Integer -> Integer -> Integer
+     #+END_SRC
+
+   default Num Integer
+   default Real Integer
+   default Enum Integer
+   default Integral Integer
+   default Fractional Double
+   default RealFrac Double
+   default Floating Double
+   default RealFloat Double
+
+   #+BEGIN_SRC haskell
+   -- you can go
+   numId = id :: Num a => a -> a
+   -- to
+   intId = numId :: Integer -> Integer
+   -- but you CAN'T
+   altNumId = intId :: Num a => a -> a -- can't go from specialized type to a more generalized type
+   #+END_SRC
+** Ord
+   - Typeclass Ord. Things that can be put in order.
+
+   - Ord is constrained by Eq because if you're going to compare items in a list and put them ind order
+     , you need a way to determine if they are equal.
+
+   - You can nest functions to have more than two arguments, ex:
+     #+BEGIN_SRC haskell
+     m = max 7 (max 8 9)
+     9
+     #+END_SRC
+*** Ord instances
+    - When you derive Ord instances for a datatype, they rely on the way the datatype is defined,
+      but if you write your own instance, you can define the behavior you want.
+      #+BEGIN_SRC haskell
+      data DayOfWeek =
+      Mon | Tue | Wed | Thu | Fri | Sat | Sun deriving (Ord, Show, Eq)
+      -- here tha values to the left are /less/ /than/ values to the right.
+      -- Mon > Tue = False
+      -- Sun > Mon = True
+
+      -- If we wanted to express that Friday is aways the best day, we write our own Ord instance.
+      data DayOfWeek =
+      Mon | Tue | Wed | Thu | Fri | Sat | Sun derivinf (Eq, Show)
+      instance Ord DayOfWeek where
+      compare Fri Fri = EQ
+      compare Fri _   = GT
+      compare _ Fri   = LT
+      compare _ _     = EQ
+
+      -- compare Fri Sat
+      -- GT
+
+      -- compare Sat Mon
+      -- EQ
+
+      -- compare Sat Fri
+      -- LT
+
+      -- Mon > Fri
+      -- False
+
+      -- Fri > Sat
+      -- True
+      #+END_SRC
+
+*** Ord implies Eq
+    #+BEGIN_SRC haskell
+    -- this will not typecheck
+    check' :: a -> a -> Bool
+    check' a a' = a == a'
+
+    -- We need Eq, but we can add Ord to it ( in "real" code we use Eq because we want to be minimal)
+    check' :: Ord a => a -> a -> Bool
+    check' a a' = a == a'
+    -- Ghc didn't ask for Ord, but anything that provides an instance of Ord /must/ by definition
+    -- also already have an instance of Eq.
+
+    -- How to know?
+    -- Just do a :i Ord and it will return something like
+    class Eq a => Ord a where
+    -- The class definition for Ord says that any /a/ must provide an Eq instance.
+    -- We can say that Eq is a /superclass/ of Ord.
+    #+END_SRC
+
+** Enum
+   - This typeclass covers types that are enumerable, therefore have known predecessors and
+     successors.
+
+     #+BEGIN_SRC haskell
+     class Enum a where
+     succ :: a -> a
+     pred :: a -> a
+     toEnum :: Int -> a
+     fromEnum :: a -> Int
+     enumFrom :: a -> [a]
+     enumFromThen :: a -> a -> [a]
+     enumFromTo :: a -> a -> [a]
+     enumFromThenTo :: a -> a -> a -> [a]
+
+     instance Enum Ordering
+     instance Enum Integer
+     instance Enum Int
+     instance Enum Char
+     instance Enum Bool
+     instance Enum ()
+     instance Enum Float
+     instance Enum Double
+     #+END_SRC
+** Show
+   - Show is a typeclass that provides for the creating of human-readable string representations
+     of structures data. GHCi uses Show to create String values it can print in the terminal.
+
+   - Show is not a serialization format. Show is not suitable for saving data to a file, etc..
+
+     #+BEGIN_SRC haskell
+     class Show a where
+     showsPrec :: Int -> a -> ShowS
+     show :: a -> String
+     showList :: [a] -> ShowS
+
+     instance Show a => Show [a]
+     instance Show Ordering
+     instance Show a => Show (Maybe a)
+     instance Show Integer
+     instance Show Int
+     instance Show Char
+     instance Show Bool
+     instance Show ()
+     instance Show Float
+     instance Show Double
+     #+END_SRC
+
+*** Printing and side effects
+    #+BEGIN_SRC haskell
+    -- This is a String value:
+    myVal :: String
+
+    -- This value is a /method/ or means of obtaining a value, by performing effects or I/O,
+    -- of type String:
+    ioString :: IO String
+    #+END_SRC
+
+    - () is BORING
+    - An IO action is performed when we call main for our program.
+
+*** Working with Show
+    - Invoking the Show typeclass also invokes its methods, specifically a method of taking your
+      values and turning them into values that can be printed to the screen.
+
+      #+BEGIN_SRC haskell
+      data Mood = Blah
+      instance Show Mood where
+      show _ = "Blah"
+      #+END_SRC
+
+    - We can derive the show instance
+      #+BEGIN_SRC haskell
+      data Mood = Blah deriving Show
+      #+END_SRC
+** Read
+   - This typeclass is essentially the opposite of Show. Where Show takes things and turns them into
+     human-readable strings, Read takes strings and turns them into things. Like Show, it's not a
+     serialization format.
+
+   - There's now way Read will aways work:
+
+     Prelude> read "1234567" :: Integer
+     1234567
+
+     Prelude> read "BLAH" :: Integer
+     ***Exception: Prelude.read: no parse
+
+   - Read doesn't return a proper value as a result for /all possible/ inputs.
+
+** Instances are dispatched by type
+   - A typeclass defines a set of functions and/or values;
+
+   - types have instances of that typeclass;
+
+   - the instances specify the ways that type uses the functions of the typeclass.
+
+     - Don't use typeclasses to define default values.
+     - Please do not write typeclasses like this:
+     #+BEGIN_SRC haskell
+     class Numberish a where
+     fromNumber :: Integer -> a
+     toNumber :: a -> Integer
+     defaultNumber :: a
+
+     instance Numberish Age where
+     fromNumber n = Age n
+     toNumber (Age n) = n
+     defaultNumber = Age 65
+
+     instance Numberish Year where
+     fromNumber n = Year n
+     toNumber (Year n) = n
+     defaultNumber = Year 1988
+     #+END_SRC
+
+     - This will not work:
+
+       Prelude> defaultNumber
+
+     - If you call the defaultNumber without the type, you get an error, because it has /no idea/
+       what type defaultNumber is other than that it's provided by Numberish's instances.
+
+     - You can use the Haskell type assertion to /dispatch/, or specify, what typeclass instance
+       you want to get our defaultNumber from.
+
+       Prelude> defaultNumber :: Age
+       Age 65
+
+       Prelude> defaultNumber :: Year
+       Year 1988
+
+
+** Gimme more operations
+   #+BEGIN_SRC haskell
+   add :: a -> a -> a
+   add x y = x + y
+   #+END_SRC
+
+   - If you load it up, you'll get an error.
+
+   - We need to add a Num constraint to the type a. Because our function can't accept a value of
+     strictly /any/ type. We need something that has an instance of Num because we use the (+) function
+     and (+) comes from Num.
+
+     #+BEGIN_SRC haskell
+     add :: Num a => a -> a -> a
+     add x y = x + y
+     #+END_SRC
+
+     - Now it works fine!
+
+   - Another:
+     #+BEGIN_SRC haskell
+     addWeird :: Num a => a -> a -> a
+     addWeird x y =
+       if x > 1
+       then x + y
+       else x
+     #+END_SRC
+     - We get another error, because we're using the (>) but we don't have the Ord constraint.
+     - Num doesn't imply Ord.
+
+       #+BEGIN_SRC haskell
+       addWeird :: (Ord a, Num a) => a -> a -> a
+       addWeird x y =
+         if x > 1
+         then x + y
+         else x
+       #+END_SRC
+       - Now it should typecheck
+
+*** Concrete types imply all the typeclasses they provide
