@@ -1282,7 +1282,6 @@
        Prelude> defaultNumber :: Year
        Year 1988
 
-
 ** Gimme more operations
    #+BEGIN_SRC haskell
    add :: a -> a -> a
@@ -1322,4 +1321,15 @@
        #+END_SRC
        - Now it should typecheck
 
-*** Concrete types imply all the typeclasses they provide
+*** Concrete types imply all the typeclasses they provid
+** Chapter Definitions
+   - 1. /Typeclass inheritance/ is when a typeclass has a superclass.
+     #+BEGIN_SRC haskell
+     class Num a => Fractional a where
+     (/) :: a -> a -> a
+     recip :: a -> a
+     fromRational :: Rational -> a
+     #+END_SRC
+     - Here the typeclass Fractional /inherits/ from Num, Num is a /superclass/ of Fractional.
+     - If you want to write an instance of Fractional for some /a/, that type /a/, must already
+       have an instance of Num before you may do so.
