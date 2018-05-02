@@ -1333,3 +1333,169 @@
      - Here the typeclass Fractional /inherits/ from Num, Num is a /superclass/ of Fractional.
      - If you want to write an instance of Fractional for some /a/, that type /a/, must already
        have an instance of Num before you may do so.
+
+     #+BEGIN_SRC haskell
+     -- even though in principle
+     -- this could work, it will fail because
+     -- Nada doesn't have a Num instance
+
+     newtype Nada = Nada Double deriving (Eq, Show)
+
+     instance Fractional Nada where
+       (Nada x) / (Nada y) = Nada (x / y)
+       recip (Nada n) = Nada (recip n)
+       fromRational r = Nada (fromRational r)
+     #+END_SRC
+     - If you try to load you will get an error for "No instance for (Num Nada)"
+
+     - You need a Num instance first. Can't write one that makes sense? Then you're
+       not allowed to have a Fractional instance either.
+
+   - 2. /Effects/ are how we refer to /observable/ actions programs may take other than
+     compute a value. If a function modifies some state or interacts with the outside world in a manner
+     that can be observed, then we say it has an /effect/ on the world.
+
+   - 3. IO is the type for values whose evaluation bears the possibility of causing side effects,
+     such as printing text, reading text input from the user, reading or writing files,
+     or connecting to remote computers. This will be explained in much more depth in the chapter on IO.
+
+   - 4. An instance is the definition of how a typeclass should work for a given type.
+     Instances are unique for a given combination of typeclass and type.
+
+   - 5. In Haskell we have derived instances so that obvious or common typeclasses, such as Eq,
+     Enum, Ord, and Show can have the instances generated based only on how the datatype
+     is defined. This is so programmers can make use of these conveniences without writing
+     the code themselves, over and over.
+
+** Typeclass inheritance, partial
+   - Pag 326
+
+
+* Chapter 7
+** Binding variables to values
+   #+BEGIN_SRC haskell
+   addOne 10 -- x is bound to 10
+   addone 10 = 10 + 1 = 11
+
+   -- We can use let expressions to declare and bind variables:
+   bindExp :: Integer -> String
+   bindExp x =
+     let y = 5 in
+     "the integer was: " ++ show x
+     ++ " and y was: " ++ show y
+     -- y is in scope because the let expression bind the variable y to 5. y is only in scope
+     -- inside the let expression.
+   #+END_SRC
+
+   - Let's see something that won't work:
+   #+BEGIN_SRC haskell
+     bindExp :: Integer -> String
+     bindExp x =
+       let z = y + x in
+         let y = 5 in
+           "the integer was: "
+           ++ show x ++ " and y was: "
+           ++ show y ++ " and z was: "
+           ++ show z
+           -- This won't work. y is not in scope for the let z expression.
+   #+END_SRC
+
+   - In some cases, functions arguments are not visible in the function if they have benn shadowed.
+     Let's see some /shadowing/
+     #+BEGIN_SRC haskell
+     binidExp :: Integer -> String
+     bindExp x =
+       let x = 10; y = 5 in
+         "the integer was: " ++ show x
+         ++ " and y was: " ++ show y
+     #+END_SRC
+   - Here the result never changes. x will always be 10.
+     - Because Haskell is /lexical scoped/
+** Anonymous functions
+   - To construct functions and use them without giving them a name.
+     #+BEGIN_SRC haskell
+     -- Here's a function:
+     triple :: Integer -> Integer
+     triple x = x * 3
+
+     -- Here's the same function but anonymous:
+     (\x -> x * 3) :: Integer -> Integer
+
+     -- You can give this function a name, making it not anonymous:
+     trip :: Integer -> Integer
+     trip = \x -> x * 3
+
+     -- To apply an anonymous functions we'll often need to wrap in parentheses so that our intent is
+     -- clear:
+     (\x -> x * 3) 5
+
+     --  If you do this you will get an error:
+     \x -> x * 3 1
+     -- The error is "Could not deduce (Num (a0 -> a)). To the computer, it looks like you're
+     -- trying to use 3 as a functiona and apply 3 to 1.
+     #+END_SRC
+** Patern matching
+   #+BEGIN_SRC haskell
+   isItTwo :: Integer -> Bool
+   isItTwo 2 = True
+   isItTwo _ = False
+   #+END_SRC
+
+   - The order of pattern matches matters!!
+     #+BEGIN_SRC haskell
+     -- This will always return False, because it will match the "anything else" case first.
+     isItTwo :: Integer -> Bool
+     isItTwo _ = False
+     isItTwo 2 = True
+     #+END_SRC
+
+*** Pattern matching tuples
+    #+BEGIN_SRC haskell
+    -- You can do like this:
+    f :: (a, b) -> (c, d) -> ((b, d), (a, c))
+    f x y = ((snd x, snd y), (fst x, fst y))
+
+    -- Or using pattern matching to make it clear:
+    f :: (a, b) -> (c, d) -> ((b, d), (a, c))
+    f (a, b) (c, d) = ((b, d), (a, c))
+    #+END_SRC
+** Case expressions
+   #+BEGIN_SRC haskell
+   funcZ x =
+     case x + 1 == 1 of
+       True -> "AWESOME"
+       False -> "wut"
+   #+END_SRC
+
+   - We could also write a case expression to tell if its argument is a palindrome:
+   #+BEGIN_SRC haskell
+   pal xs =
+     case xs == reverse xs of
+       True -> "yes"
+       False -> "no"
+   #+END_SRC
+
+   - The above can also be written with a where clause:
+     #+BEGIN_SRC haskell
+     pal' xs =
+       case y of
+         True -> "yes"
+         False -> "no"
+       where y = xs == reverse xs
+     #+END_SRC
+** High-order functions
+   - /Higher-order functions/ (HOFs) are functions that accept functions as arguments.
+
+   - Let's examine a standard higher-order function, flip:
+     #+BEGIN_SRC haskell
+     flip :: (a -> b -> c) -> b -> a -> c
+     -- using (-) as our (a -> b -> c)
+     t = flip (-) 10 1
+     #+END_SRC
+
+     #+BEGIN_SRC haskell
+     flip :: (a -> b -> c) -> b -> a -> c
+     flip f x y = f y x
+     -- or
+     flip f = \ x y -> f y x
+     #+END_SRC
