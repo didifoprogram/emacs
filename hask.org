@@ -1509,7 +1509,7 @@
 
    #+BEGIN_SRC haskell
    bloodNa :: Integer -> String
-   bllod x
+   bllodNa x
    | x < 135 = "too low"
    | x > 145 = "too high"
    | otherwise = "just right"
@@ -1546,10 +1546,44 @@
      where y = x / 100
      #+END_SRC
 ** Function composition
-   - Is a type of higher-orfer function that allows us to combine functions such that the result
+   - Is a type of higher-order function that allows us to combine functions such that the result
      of applying one function gets passed to the next functions as an argument.
 
    - The basic syntaxt of function composition looks like this:
      #+BEGIN_SRC haskell
      (f . g) x = f (g x)
+
+     negate . sum $ [1, 2, 3, 4]
+     -- or
+     (negate . sum) [1, 2, 3, 4]
+
+     take 5 . reverse $ [1..10]
+     -- first the list will be reversed and then first 5 elements of the new list will be returned
+
+     f x = take 5 . enumFrom $ x
+     g x = take 5 . filter odd . enumFrom $ x
+
+     -- using the . operator for composing functions.
+     (.) :: (b -> c) -> (a -> b) -> a -> c
+     print :: Show a => a -> IO ()
+     print a = (putStrLn . show) a
+
+     -- point free version
+     print :: Show a => a -> IO ()
+     print = purStrLn . show
+     #+END_SRC
+** Pointfree style
+   - Composing functions without specifying their arguments.
+     #+BEGIN_SRC haskell
+     f . g = \x -> f (g x)
+     f . g . h = \x -> f (g (h x))
+
+     f = negate . sum
+
+     f :: Int -> [Int] -> Int
+     f z xs = foldr (+) z xs
+     f = foldr (+)
+
+     f = lenght . filter (== 'a') -- filter :: ( a -> Bool) -> [a] -> [a]
+     -- (== 'a') :: Char -> Bool so it fits the (a -> Bool)
      #+END_SRC

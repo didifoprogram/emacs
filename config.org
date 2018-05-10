@@ -27,7 +27,7 @@
 
 * Font
 #+BEGIN_SRC emacs-lisp
-  (set-default-font "Iosevka 13" nil t)
+  (set-default-font "Hasklug Nerd Font 13" nil t)
 #+END_SRC
 
 * Simple Configs
@@ -301,6 +301,7 @@
 #+BEGIN_SRC emacs-lisp
 (use-package haskell-mode
 :ensure t)
+(setq haskell-font-lock-symbols t)
 #+END_SRC
 
 * Exec-path-from-shell

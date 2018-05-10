@@ -16,7 +16,7 @@
     :ensure t)
   (load-theme 'doom-tomorrow-night t)
 
-(set-default-font "Iosevka 13" nil t)
+(set-default-font "Hasklug Nerd Font 13" nil t)
 
 (menu-bar-mode -1)
 (tool-bar-mode -1)
@@ -189,6 +189,7 @@
 
 (use-package haskell-mode
 :ensure t)
+(setq haskell-font-lock-symbols t)
 
 (use-package exec-path-from-shell
 :ensure t)
