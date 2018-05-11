@@ -1587,3 +1587,185 @@
      f = lenght . filter (== 'a') -- filter :: ( a -> Bool) -> [a] -> [a]
      -- (== 'a') :: Char -> Bool so it fits the (a -> Bool)
      #+END_SRC
+** Chapter Definitions
+   - 1. /Binding/ or /bound/ ir a common word used to indicate connection, linkage, or association bettwen
+     two objects. In Haskell we'll use it to talk about what value a variable has.
+     #+BEGIN_SRC haskell
+     blah :: Int
+     blah = 10
+     #+END_SRC
+     - Here the variable blah is bound to the value 10.
+
+   - 2. An anonymous function is a function which is not bound to an identifier and is instead 
+     passed as an argument to another function and/or used to construct another function.
+     #+BEGIN_SRC haskell
+     \x -> x
+     -- anonymous version of id
+
+     id x = x
+     -- not anonymous, its bound to 'id'
+     #+END_SRC
+
+   - 3. Currying is the process of transforming a function that takes multiple arguments into a
+     series of functions which each take one argument and return one result. This is accomplished
+     through the nesting. In Haskell, all functions are curried by default.
+     You don’t need to do anything special yourself.
+     #+BEGIN_SRC haskell
+     -- curry and uncurry already exist in Prelude
+     curry' :: ((a, b) -> c) -> a -> b -> c
+     curry' f a b = f (a, b)
+
+     uncurry' :: (a -> b -> c) -> ((a, b) -> c)
+     uncurry' f (a, b) = f a b
+
+     -- uncurried function,
+     -- takes a tuple of its arguments
+     add :: (Int, Int) -> Int
+     add (x, y) = x + y
+
+     add' :: Int -> Int -> Int
+     add' = curry' add
+
+     f a b = a + b
+     -- is equivalent to
+     f = \a -> (\b -> a + b)
+    #+END_SRC
+
+   - 4. /Pattern matching/ is a syntactic way of deconstructing product and sum types to get at their
+     inhabitants.
+     #+BEGIN_SRC haskell
+     -- nullary data constructor, not a sum or product.
+     -- Just a single value.
+     data Blah = Blah
+     -- Pattern matching on Blah can only do one thing.
+     blahFunc :: Blah -> Bool
+     blahFunc Blah = True
+
+     data Identity a = Identity a deriving (Eq, Show)
+     -- when you pattern match on identity you can unpack and expose the 'a'
+
+     unpackIdentity :: Identity a -> a
+     unpackIdentity (Indetity x) = x
+
+     -- choose to ignore the contents of Identity
+     ignoreIdentity :: Identity a -> Bool
+     ignoreIdentity (Identity _) = True
+
+     -- or ignore it completely since matching on a non-sum data constructor
+     -- changes nothing.
+     ignoreIdentity' :: Identity a -> Bool
+     ignoreIdentity' _ = True
+
+     data Product a b = Product a b deriving (Eq, Show)
+     -- Now we can choose to use none, one, or both of the values in the product of a and b:
+     productUnpackOnlyA :: Product a b -> a
+     productUnpackOnlyA (Product x _ ) = x
+
+     productUnpackOnlyB :: Product a b -> b
+     productUnpackOnlyB (Product _ y) = y
+
+     -- Or we can bind them both to a different name:
+     productUnpack :: Product a b -> (a, b)
+     productUnpack (Product x y) = (x, y)
+
+     -- =============================================
+
+     data SumOfThree a b c =
+       FirstPossible a
+       | SecondPossible b
+       | ThirdPossible c
+       deriving (Eq, Show)
+
+       -- Now we can discriminate by the inhabitants of the sum and choose to do different things based
+       -- on which constructor in the sum they were.
+       sumToInt :: SumOfThree a b c -> Integer
+       sumToInt (FirstPossible _) = 0
+       sumToInt (SecondPossible _) = 1
+       sumToInt (ThirdPossible _) = 2
+
+       -- We can selectively ignore inhabitants of the sum
+       sumToInt :: SumOfThree a b c -> Integer
+       sumToInt (FirstPossible _) = 0
+       sumToInt _ = 1
+     #+END_SRC
+
+   - /Bottom/ is a non-value used to denote that the program cannot return a value or result.
+     The most elemental manifestation of this is a program that loops infinitely.
+
+     #+BEGIN_SRC haskell
+     -- If you apply this to any values, it'll recurse indefinitely.
+     f x = f x
+
+     -- It'll a'splode if you pass False
+     dontDoThis :: Bool -> Int
+     dontDoThis True = 1
+
+     -- morally equivalent to
+     definetelyDontDoThis :: Bool -> Int
+     definetelyDontDoThis True = 1
+     definetelyDontDoThis False = error "oops"
+     -- don't use error
+     -- there's a better way.
+     #+END_SRC
+
+   - 6. High-order functions
+     #+BEGIN_SRC haskell
+     -- Technically higher order because of currying
+     Int -> Int -> Int
+
+     -- see? Returns another functions after applying the first arg
+     -- -> is right associative
+     Int -> (Int -> Int)
+
+     -- The rest of the following examples are types of higher order functions
+
+     (a -> b) -> a -> b
+
+     (a -> b) -> [a] -> [b]
+
+     (Int -> Bool) -> [Int] -> [Bool]
+
+     -- also higher order, this one takes a function argument which itself is higher order as well.
+     ((a -> b) -> c) -> [a] -> [c]
+     #+END_SRC
+
+   - 7. /Composition/ is the application of a function to the result of having applied another function.
+     The composition operator is a higher-order function as it takes the functions it composes as
+     arguments and then returns a function of the composition:
+     #+BEGIN_SRC haskell
+     (.) :: (b -> c) -> (a -> b) -> a -> c
+
+     -- is
+     (.) :: (b -> c) -> (a -> b) -> (a -> c)
+
+     -- or
+     (.) :: (b -> c) -> ((a -> b) -> (a -> c))
+
+     -- can be implemented as
+     comp :: (b -> c) -> ((a -> b) -> (a -> c))
+     comp f g x = f (g x)
+     -- The function g is applied to x, f is applied to the result of g x.
+     #+END_SRC
+
+   - 8. /Pointfree/ is programming tacitly, or without mentioning arguments by name. This tends to
+     look "plumby" code where you're routing data around implicitly or leabing off unnecessary
+     arguments thanks to currying. The "point" referred to in the term pointfree is an argument.
+
+     #+BEGIN_SRC haskell
+     -- not pointfree
+     blah x = x
+     addAndDrop x y = x + 1
+     reverseMkTuple a b = (b, a)
+     reverseTuple (a, b) = (b, a)
+
+     -- pointfree versions
+     blah = id
+     addAndDrop = const . (1 +) -- don't understand
+     reverseMkTuple = flip (,)
+     reversetuple = uncurry (flip (,))
+     -- another example: curry (\(a, b) -> a + b) 10 20
+
+     -- f = \x -> (\y -> x + y) 10 20
+     -- f = (\y -> 10 + y) 20
+     -- f = 10 + 20
+     #+END_SRC
