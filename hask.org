@@ -1769,3 +1769,71 @@
      -- f = (\y -> 10 + y) 20
      -- f = 10 + 20
      #+END_SRC
+* Chapter 8
+  - Recursion is a means of expressing code that mnust take an /indefinite/ number of steps to
+    return a result.
+    - We use a combinator - known as the Y combinator or fixed-point combinator - to write recursive
+      functions in the lambda calculus.
+      #+BEGIN_SRC haskell
+      -- no base case
+      brokenFact1 :: Integer -> Integer
+      brokenFact1 n = n * brokenFact1 (n - 1)
+
+      -- let's apply
+      brokenFact1 4 =
+        4 * (4 -1)
+        * ((4 - 1) - 1)
+        * (((4 - 1) - 1) - 1) -- this won't stop
+      #+END_SRC
+
+    - Intermission: Exercise
+      #+BEGIN_SRC haskell
+      applyTimes :: (Eq a, Num a) => a -> (b -> b) -> b -> b
+      applyTimes 0 f b = b
+      applyTimes n f b = f (applyTimes (n - 1) f b)
+      -- or
+      applyTimes n f b = f . applyTimes (n - 1) f $ b
+
+      -- evaluation
+      applyTimes 5 (+1) 5
+      = applyTimes (+1) $ applyTimes 4 (+1) 5 -- keep going
+      = applyTimes (+1) $ (+1) $ applyTimes 3 (+1) 5
+      = applyTimes (+1) $ (+1) $ (+1) $ applyTimes 2 (+1) 5
+      = applyTimes (+1) $ (+1) $ (+1) $ (+1) $ applyTimes 1 (+1) 5
+      = applyTimes (+1) $ (+1) $ (+1) $ (+1) $ (+1) $ applyTimes 0 (+1) 5 -- now it returns 5
+      = (+1) $ (+1) $ (+1) $ (+1) $ (+1) $ 5
+      = 10
+
+      -- another example
+      incTimes 3 5 = 1 + (incTimes (3 - 1) 5)
+      = 1 + (incTimes (2 - 1) 5)
+      = 1 + 1 + (incTimes (1 - 1) 5) -- times == 0 so it returns n
+      = 1 + 1 + 1 + 5
+      = 8
+      #+END_SRC
+
+  - /Bottom/ is a term used in Haskell to refer to computations that do not successfully result in
+    a value.
+    Let's examine a few ways by which we can have bottom in our programs:
+    #+BEGIN_SRC haskell
+    x = x in x
+    #+END_SRC
+    Next let's define a function that will return an exception:
+    #+BEGIN_SRC haskell
+    f :: Bool -> Int
+    f True = error "blah"
+    f False = 0
+    #+END_SRC
+    - When we evaluate f True, we get an exception, which is a bottom too.
+
+  - Fibonacci
+    #+BEGIN_SRC haskell
+    fibonacci :: Integral a => a -> a
+    fibonacci 0 = 0
+    fibonacci 1 = 1
+    fibonacci n = fibonacci (n - 1) + fibonacci (n - 2)
+
+    -- evaluation
+    fibonacci 3 = fibonacci (3 - 1) + fibonacci (3 - 2)
+    fibonacci (2 - 1) + fibonacci (2 - 2)
+    #+END_SRC
