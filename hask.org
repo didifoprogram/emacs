@@ -1482,293 +1482,293 @@
          False -> "no"
        where y = xs == reverse xs
      #+END_SRC
-** High-order functions
-   - /Higher-order functions/ (HOFs) are functions that accept functions as arguments.
+*** High-order functions
+    - /Higher-order functions/ (HOFs) are functions that accept functions as arguments.
 
-   - Let's examine a standard higher-order function, flip:
-     #+BEGIN_SRC haskell
-     flip :: (a -> b -> c) -> b -> a -> c
-     -- using (-) as our (a -> b -> c)
-     t = flip (-) 10 1
-     #+END_SRC
+    - Let's examine a standard higher-order function, flip:
+      #+BEGIN_SRC haskell
+      flip :: (a -> b -> c) -> b -> a -> c
+      -- using (-) as our (a -> b -> c)
+      t = flip (-) 10 1
+      #+END_SRC
 
-     #+BEGIN_SRC haskell
-     flip :: (a -> b -> c) -> b -> a -> c
-     flip f x y = f y x
-     -- or
-     flip f = \ x y -> f y x
-     #+END_SRC
-** Guards
-   - Between the | and the =, must evaluate to a Bool value.
-   #+BEGIN_SRC haskell
-   myAbs :: Integer -> Integer
-   myAbs x
-     | x < 0 = (-x)
-     | otherwise = x
-   #+END_SRC
-
-   #+BEGIN_SRC haskell
-   bloodNa :: Integer -> String
-   bllodNa x
-   | x < 135 = "too low"
-   | x > 145 = "too high"
-   | otherwise = "just right"
-   #+END_SRC
-
-   - Calculating if its a right triangle or not
-     #+BEGIN_SRC haskell
-     isRight :: (Num a, Eq a) => a -> a -> a -> String
-     isRight a b c
-     | a^2 + b^2 == c^2 = "RIGHT ON"
-     | otherwise = "not right"
-     #+END_SRC
-
-   - Dog's age
-     #+BEGIN_SRC haskell
-     dogYrs :: Integer -> Integer
-     dogYrs x
-     | x <= 0 = 0
-     | x <= 1 = x * 15
-     | x <= 2 = x * 12
-     | x <= 4 = x * 8
-     | otherwise = x * 6
-     #+END_SRC
-
-   - Student grade
-     #+BEGIN_SRC haskell
-     avgGrade :: (Fractional a, Ord a) => a -> Char
-     avgGrade x
-     | y >= 0.9 = 'A'
-     | y >= 0.8 = 'B'
-     | y >= 0.7 = 'C'
-     | y >= 0.59 = 'D'
-     | y < 0.59 = 'F'
-     where y = x / 100
-     #+END_SRC
-** Function composition
-   - Is a type of higher-order function that allows us to combine functions such that the result
-     of applying one function gets passed to the next functions as an argument.
-
-   - The basic syntaxt of function composition looks like this:
-     #+BEGIN_SRC haskell
-     (f . g) x = f (g x)
-
-     negate . sum $ [1, 2, 3, 4]
-     -- or
-     (negate . sum) [1, 2, 3, 4]
-
-     take 5 . reverse $ [1..10]
-     -- first the list will be reversed and then first 5 elements of the new list will be returned
-
-     f x = take 5 . enumFrom $ x
-     g x = take 5 . filter odd . enumFrom $ x
-
-     -- using the . operator for composing functions.
-     (.) :: (b -> c) -> (a -> b) -> a -> c
-     print :: Show a => a -> IO ()
-     print a = (putStrLn . show) a
-
-     -- point free version
-     print :: Show a => a -> IO ()
-     print = purStrLn . show
-     #+END_SRC
-** Pointfree style
-   - Composing functions without specifying their arguments.
-     #+BEGIN_SRC haskell
-     f . g = \x -> f (g x)
-     f . g . h = \x -> f (g (h x))
-
-     f = negate . sum
-
-     f :: Int -> [Int] -> Int
-     f z xs = foldr (+) z xs
-     f = foldr (+)
-
-     f = lenght . filter (== 'a') -- filter :: ( a -> Bool) -> [a] -> [a]
-     -- (== 'a') :: Char -> Bool so it fits the (a -> Bool)
-     #+END_SRC
-** Chapter Definitions
-   - 1. /Binding/ or /bound/ ir a common word used to indicate connection, linkage, or association bettwen
-     two objects. In Haskell we'll use it to talk about what value a variable has.
-     #+BEGIN_SRC haskell
-     blah :: Int
-     blah = 10
-     #+END_SRC
-     - Here the variable blah is bound to the value 10.
-
-   - 2. An anonymous function is a function which is not bound to an identifier and is instead 
-     passed as an argument to another function and/or used to construct another function.
-     #+BEGIN_SRC haskell
-     \x -> x
-     -- anonymous version of id
-
-     id x = x
-     -- not anonymous, its bound to 'id'
-     #+END_SRC
-
-   - 3. Currying is the process of transforming a function that takes multiple arguments into a
-     series of functions which each take one argument and return one result. This is accomplished
-     through the nesting. In Haskell, all functions are curried by default.
-     You don’t need to do anything special yourself.
-     #+BEGIN_SRC haskell
-     -- curry and uncurry already exist in Prelude
-     curry' :: ((a, b) -> c) -> a -> b -> c
-     curry' f a b = f (a, b)
-
-     uncurry' :: (a -> b -> c) -> ((a, b) -> c)
-     uncurry' f (a, b) = f a b
-
-     -- uncurried function,
-     -- takes a tuple of its arguments
-     add :: (Int, Int) -> Int
-     add (x, y) = x + y
-
-     add' :: Int -> Int -> Int
-     add' = curry' add
-
-     f a b = a + b
-     -- is equivalent to
-     f = \a -> (\b -> a + b)
+      #+BEGIN_SRC haskell
+      flip :: (a -> b -> c) -> b -> a -> c
+      flip f x y = f y x
+      -- or
+      flip f = \ x y -> f y x
+      #+END_SRC
+*** Guards
+    - Between the | and the =, must evaluate to a Bool value.
+    #+BEGIN_SRC haskell
+    myAbs :: Integer -> Integer
+    myAbs x
+      | x < 0 = (-x)
+      | otherwise = x
     #+END_SRC
 
-   - 4. /Pattern matching/ is a syntactic way of deconstructing product and sum types to get at their
-     inhabitants.
-     #+BEGIN_SRC haskell
-     -- nullary data constructor, not a sum or product.
-     -- Just a single value.
-     data Blah = Blah
-     -- Pattern matching on Blah can only do one thing.
-     blahFunc :: Blah -> Bool
-     blahFunc Blah = True
+    #+BEGIN_SRC haskell
+    bloodNa :: Integer -> String
+    bllodNa x
+    | x < 135 = "too low"
+    | x > 145 = "too high"
+    | otherwise = "just right"
+    #+END_SRC
 
-     data Identity a = Identity a deriving (Eq, Show)
-     -- when you pattern match on identity you can unpack and expose the 'a'
+    - Calculating if its a right triangle or not
+      #+BEGIN_SRC haskell
+      isRight :: (Num a, Eq a) => a -> a -> a -> String
+      isRight a b c
+      | a^2 + b^2 == c^2 = "RIGHT ON"
+      | otherwise = "not right"
+      #+END_SRC
 
-     unpackIdentity :: Identity a -> a
-     unpackIdentity (Indetity x) = x
+    - Dog's age
+      #+BEGIN_SRC haskell
+      dogYrs :: Integer -> Integer
+      dogYrs x
+      | x <= 0 = 0
+      | x <= 1 = x * 15
+      | x <= 2 = x * 12
+      | x <= 4 = x * 8
+      | otherwise = x * 6
+      #+END_SRC
 
-     -- choose to ignore the contents of Identity
-     ignoreIdentity :: Identity a -> Bool
-     ignoreIdentity (Identity _) = True
+    - Student grade
+      #+BEGIN_SRC haskell
+      avgGrade :: (Fractional a, Ord a) => a -> Char
+      avgGrade x
+      | y >= 0.9 = 'A'
+      | y >= 0.8 = 'B'
+      | y >= 0.7 = 'C'
+      | y >= 0.59 = 'D'
+      | y < 0.59 = 'F'
+      where y = x / 100
+      #+END_SRC
+*** Function composition
+    - Is a type of higher-order function that allows us to combine functions such that the result
+      of applying one function gets passed to the next functions as an argument.
 
-     -- or ignore it completely since matching on a non-sum data constructor
-     -- changes nothing.
-     ignoreIdentity' :: Identity a -> Bool
-     ignoreIdentity' _ = True
+    - The basic syntaxt of function composition looks like this:
+      #+BEGIN_SRC haskell
+      (f . g) x = f (g x)
 
-     data Product a b = Product a b deriving (Eq, Show)
-     -- Now we can choose to use none, one, or both of the values in the product of a and b:
-     productUnpackOnlyA :: Product a b -> a
-     productUnpackOnlyA (Product x _ ) = x
+      negate . sum $ [1, 2, 3, 4]
+      -- or
+      (negate . sum) [1, 2, 3, 4]
 
-     productUnpackOnlyB :: Product a b -> b
-     productUnpackOnlyB (Product _ y) = y
+      take 5 . reverse $ [1..10]
+      -- first the list will be reversed and then first 5 elements of the new list will be returned
 
-     -- Or we can bind them both to a different name:
-     productUnpack :: Product a b -> (a, b)
-     productUnpack (Product x y) = (x, y)
+      f x = take 5 . enumFrom $ x
+      g x = take 5 . filter odd . enumFrom $ x
 
-     -- =============================================
+      -- using the . operator for composing functions.
+      (.) :: (b -> c) -> (a -> b) -> a -> c
+      print :: Show a => a -> IO ()
+      print a = (putStrLn . show) a
 
-     data SumOfThree a b c =
-       FirstPossible a
-       | SecondPossible b
-       | ThirdPossible c
-       deriving (Eq, Show)
+      -- point free version
+      print :: Show a => a -> IO ()
+      print = purStrLn . show
+      #+END_SRC
+*** Pointfree style
+    - Composing functions without specifying their arguments.
+      #+BEGIN_SRC haskell
+      f . g = \x -> f (g x)
+      f . g . h = \x -> f (g (h x))
 
-       -- Now we can discriminate by the inhabitants of the sum and choose to do different things based
-       -- on which constructor in the sum they were.
-       sumToInt :: SumOfThree a b c -> Integer
-       sumToInt (FirstPossible _) = 0
-       sumToInt (SecondPossible _) = 1
-       sumToInt (ThirdPossible _) = 2
+      f = negate . sum
 
-       -- We can selectively ignore inhabitants of the sum
-       sumToInt :: SumOfThree a b c -> Integer
-       sumToInt (FirstPossible _) = 0
-       sumToInt _ = 1
+      f :: Int -> [Int] -> Int
+      f z xs = foldr (+) z xs
+      f = foldr (+)
+
+      f = lenght . filter (== 'a') -- filter :: ( a -> Bool) -> [a] -> [a]
+      -- (== 'a') :: Char -> Bool so it fits the (a -> Bool)
+      #+END_SRC
+*** Chapter Definitions
+    - 1. /Binding/ or /bound/ ir a common word used to indicate connection, linkage, or association bettwen
+      two objects. In Haskell we'll use it to talk about what value a variable has.
+      #+BEGIN_SRC haskell
+      blah :: Int
+      blah = 10
+      #+END_SRC
+      - Here the variable blah is bound to the value 10.
+
+    - 2. An anonymous function is a function which is not bound to an identifier and is instead 
+      passed as an argument to another function and/or used to construct another function.
+      #+BEGIN_SRC haskell
+      \x -> x
+      -- anonymous version of id
+
+      id x = x
+      -- not anonymous, its bound to 'id'
+      #+END_SRC
+
+    - 3. Currying is the process of transforming a function that takes multiple arguments into a
+      series of functions which each take one argument and return one result. This is accomplished
+      through the nesting. In Haskell, all functions are curried by default.
+      You don’t need to do anything special yourself.
+      #+BEGIN_SRC haskell
+      -- curry and uncurry already exist in Prelude
+      curry' :: ((a, b) -> c) -> a -> b -> c
+      curry' f a b = f (a, b)
+
+      uncurry' :: (a -> b -> c) -> ((a, b) -> c)
+      uncurry' f (a, b) = f a b
+
+      -- uncurried function,
+      -- takes a tuple of its arguments
+      add :: (Int, Int) -> Int
+      add (x, y) = x + y
+
+      add' :: Int -> Int -> Int
+      add' = curry' add
+
+      f a b = a + b
+      -- is equivalent to
+      f = \a -> (\b -> a + b)
      #+END_SRC
 
-   - /Bottom/ is a non-value used to denote that the program cannot return a value or result.
-     The most elemental manifestation of this is a program that loops infinitely.
+    - 4. /Pattern matching/ is a syntactic way of deconstructing product and sum types to get at their
+      inhabitants.
+      #+BEGIN_SRC haskell
+      -- nullary data constructor, not a sum or product.
+      -- Just a single value.
+      data Blah = Blah
+      -- Pattern matching on Blah can only do one thing.
+      blahFunc :: Blah -> Bool
+      blahFunc Blah = True
 
-     #+BEGIN_SRC haskell
-     -- If you apply this to any values, it'll recurse indefinitely.
-     f x = f x
+      data Identity a = Identity a deriving (Eq, Show)
+      -- when you pattern match on identity you can unpack and expose the 'a'
 
-     -- It'll a'splode if you pass False
-     dontDoThis :: Bool -> Int
-     dontDoThis True = 1
+      unpackIdentity :: Identity a -> a
+      unpackIdentity (Indetity x) = x
 
-     -- morally equivalent to
-     definetelyDontDoThis :: Bool -> Int
-     definetelyDontDoThis True = 1
-     definetelyDontDoThis False = error "oops"
-     -- don't use error
-     -- there's a better way.
-     #+END_SRC
+      -- choose to ignore the contents of Identity
+      ignoreIdentity :: Identity a -> Bool
+      ignoreIdentity (Identity _) = True
 
-   - 6. High-order functions
-     #+BEGIN_SRC haskell
-     -- Technically higher order because of currying
-     Int -> Int -> Int
+      -- or ignore it completely since matching on a non-sum data constructor
+      -- changes nothing.
+      ignoreIdentity' :: Identity a -> Bool
+      ignoreIdentity' _ = True
 
-     -- see? Returns another functions after applying the first arg
-     -- -> is right associative
-     Int -> (Int -> Int)
+      data Product a b = Product a b deriving (Eq, Show)
+      -- Now we can choose to use none, one, or both of the values in the product of a and b:
+      productUnpackOnlyA :: Product a b -> a
+      productUnpackOnlyA (Product x _ ) = x
 
-     -- The rest of the following examples are types of higher order functions
+      productUnpackOnlyB :: Product a b -> b
+      productUnpackOnlyB (Product _ y) = y
 
-     (a -> b) -> a -> b
+      -- Or we can bind them both to a different name:
+      productUnpack :: Product a b -> (a, b)
+      productUnpack (Product x y) = (x, y)
 
-     (a -> b) -> [a] -> [b]
+      -- =============================================
 
-     (Int -> Bool) -> [Int] -> [Bool]
+      data SumOfThree a b c =
+        FirstPossible a
+        | SecondPossible b
+        | ThirdPossible c
+        deriving (Eq, Show)
 
-     -- also higher order, this one takes a function argument which itself is higher order as well.
-     ((a -> b) -> c) -> [a] -> [c]
-     #+END_SRC
+        -- Now we can discriminate by the inhabitants of the sum and choose to do different things based
+        -- on which constructor in the sum they were.
+        sumToInt :: SumOfThree a b c -> Integer
+        sumToInt (FirstPossible _) = 0
+        sumToInt (SecondPossible _) = 1
+        sumToInt (ThirdPossible _) = 2
 
-   - 7. /Composition/ is the application of a function to the result of having applied another function.
-     The composition operator is a higher-order function as it takes the functions it composes as
-     arguments and then returns a function of the composition:
-     #+BEGIN_SRC haskell
-     (.) :: (b -> c) -> (a -> b) -> a -> c
+        -- We can selectively ignore inhabitants of the sum
+        sumToInt :: SumOfThree a b c -> Integer
+        sumToInt (FirstPossible _) = 0
+        sumToInt _ = 1
+      #+END_SRC
 
-     -- is
-     (.) :: (b -> c) -> (a -> b) -> (a -> c)
+    - /Bottom/ is a non-value used to denote that the program cannot return a value or result.
+      The most elemental manifestation of this is a program that loops infinitely.
 
-     -- or
-     (.) :: (b -> c) -> ((a -> b) -> (a -> c))
+      #+BEGIN_SRC haskell
+      -- If you apply this to any values, it'll recurse indefinitely.
+      f x = f x
 
-     -- can be implemented as
-     comp :: (b -> c) -> ((a -> b) -> (a -> c))
-     comp f g x = f (g x)
-     -- The function g is applied to x, f is applied to the result of g x.
-     #+END_SRC
+      -- It'll a'splode if you pass False
+      dontDoThis :: Bool -> Int
+      dontDoThis True = 1
 
-   - 8. /Pointfree/ is programming tacitly, or without mentioning arguments by name. This tends to
-     look "plumby" code where you're routing data around implicitly or leabing off unnecessary
-     arguments thanks to currying. The "point" referred to in the term pointfree is an argument.
+      -- morally equivalent to
+      definetelyDontDoThis :: Bool -> Int
+      definetelyDontDoThis True = 1
+      definetelyDontDoThis False = error "oops"
+      -- don't use error
+      -- there's a better way.
+      #+END_SRC
 
-     #+BEGIN_SRC haskell
-     -- not pointfree
-     blah x = x
-     addAndDrop x y = x + 1
-     reverseMkTuple a b = (b, a)
-     reverseTuple (a, b) = (b, a)
+    - 6. High-order functions
+      #+BEGIN_SRC haskell
+      -- Technically higher order because of currying
+      Int -> Int -> Int
 
-     -- pointfree versions
-     blah = id
-     addAndDrop = const . (1 +) -- don't understand
-     reverseMkTuple = flip (,)
-     reversetuple = uncurry (flip (,))
-     -- another example: curry (\(a, b) -> a + b) 10 20
+      -- see? Returns another functions after applying the first arg
+      -- -> is right associative
+      Int -> (Int -> Int)
 
-     -- f = \x -> (\y -> x + y) 10 20
-     -- f = (\y -> 10 + y) 20
-     -- f = 10 + 20
-     #+END_SRC
+      -- The rest of the following examples are types of higher order functions
+
+      (a -> b) -> a -> b
+
+      (a -> b) -> [a] -> [b]
+
+      (Int -> Bool) -> [Int] -> [Bool]
+
+      -- also higher order, this one takes a function argument which itself is higher order as well.
+      ((a -> b) -> c) -> [a] -> [c]
+      #+END_SRC
+
+    - 7. /Composition/ is the application of a function to the result of having applied another function.
+      The composition operator is a higher-order function as it takes the functions it composes as
+      arguments and then returns a function of the composition:
+      #+BEGIN_SRC haskell
+      (.) :: (b -> c) -> (a -> b) -> a -> c
+
+      -- is
+      (.) :: (b -> c) -> (a -> b) -> (a -> c)
+
+      -- or
+      (.) :: (b -> c) -> ((a -> b) -> (a -> c))
+
+      -- can be implemented as
+      comp :: (b -> c) -> ((a -> b) -> (a -> c))
+      comp f g x = f (g x)
+      -- The function g is applied to x, f is applied to the result of g x.
+      #+END_SRC
+
+    - 8. /Pointfree/ is programming tacitly, or without mentioning arguments by name. This tends to
+      look "plumby" code where you're routing data around implicitly or leabing off unnecessary
+      arguments thanks to currying. The "point" referred to in the term pointfree is an argument.
+
+      #+BEGIN_SRC haskell
+      -- not pointfree
+      blah x = x
+      addAndDrop x y = x + 1
+      reverseMkTuple a b = (b, a)
+      reverseTuple (a, b) = (b, a)
+
+      -- pointfree versions
+      blah = id
+      addAndDrop = const . (1 +) -- don't understand
+      reverseMkTuple = flip (,)
+      reversetuple = uncurry (flip (,))
+      -- another example: curry (\(a, b) -> a + b) 10 20
+
+      -- f = \x -> (\y -> x + y) 10 20
+      -- f = (\y -> 10 + y) 20
+      -- f = 10 + 20
+      #+END_SRC
 * Chapter 8
   - Recursion is a means of expressing code that mnust take an /indefinite/ number of steps to
     return a result.
@@ -1837,3 +1837,76 @@
     fibonacci 3 = fibonacci (3 - 1) + fibonacci (3 - 2)
     fibonacci (2 - 1) + fibonacci (2 - 2)
     #+END_SRC
+
+  - Integral division from sratch
+    #+BEGIN_SRC haskell
+    -- we can do
+    dividedBy :: Integer -> Integer -> Integer
+    dividedBy = div
+
+    -- or to make more obvious
+    type Numerator = Integer
+    type Denominator = Integer
+    type Quotient = Integer
+    dividedBy :: Numerator -> Denominator -> Quotient
+    dividedBy = div
+    #+END_SRC
+    - The type keyword declares a type synonym, or type alias.
+
+** Definitions
+   - /Recursion/ is a means of computing results that may require an indefinite amount of work to
+     obtain through the use of repeated function application. Most recursive functions that terminate
+     or otherwise do useful work will often have a case that calls itselff and a base case that acts
+     as a backstop of sorts for the recursion.
+     #+BEGIN_SRC haskell
+     -- not recursive
+     lessOne :: Int -> Int
+     lessOne n = n - 1
+
+     -- recursive
+     zero :: Int -> Int
+     zero 0 = 0
+     zero n = zero (n - 1)
+     #+END_SRC
+
+* Chapter 9
+** Lists
+** The list datatype
+   #+BEGIN_SRC haskell
+   data []  a   =   []  |   a : [a]
+   --  [1] [2] [3] [4] [5]    [6]
+
+   -- 1. The datatype with the type constructor []
+   -- 2. takes a single type constructor argument 'a';
+   -- 3. at the term level can be constructed via
+   -- 4. nullary constructor []
+   -- 5. /or/ can be constructed by
+   -- 6. data constructor (:) which is a product of a value of the type 'a' we mentioned in the type
+   --    constructor /and/ a value of type [a], that is "more list".
+   #+END_SRC
+** Pattern matching on lists
+   #+BEGIN_SRC haskell
+   -- Match on the first argument to the infix (:) constructor, ignoring the rest of the list.
+   myHead :: [t] -> t
+   myHead (x : _) = x
+
+   -- we can do the opposite as well:
+   myTail :: [t] -> [t]
+   myTail (_ : xs) = xs
+
+   -- better way:
+   safeTail :: [a] -> Maybe [a]
+   safeTail [] = Nothing
+   safeTail (x:[]) = Nothing
+   safeTail (_:xs) = Just xs
+   #+END_SRC
+** List's syntactic sugar
+   - Haskell has some syntactic sugar on lists:
+     #+BEGIN_SRC haskell
+     [1, 2, 3] ++ [4] = [1, 2, 3, 4]
+     -- rather than:
+     (1 : 2 : 3 : []) ++ 4 : [] = [1, 2, 3, 4]
+
+     -- : is infixr so:
+     (1 : (2 : (3 : [])))
+     #+END_SRC
