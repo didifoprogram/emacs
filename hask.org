@@ -2010,4 +2010,4 @@
        cells contain the values.
        #+CAPTION: Representation of the list spine
        #+NAME:   fig:list-spine
-       [[.list-spine.png]]
+       [[list-spine.png]]
