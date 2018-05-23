@@ -139,8 +139,12 @@
   - M-x sp-cheat-sheet will show you all the commands available, with examples.
 #+BEGIN_SRC emacs-lisp
 (use-package smartparens
-:ensure t)
-(add-hook 'prog-mode-hook 'smartparens-mode)
+  :ensure t
+  :diminish smartparens-mode
+  :config
+  (progn
+    (require 'smartparens-config)
+(smartparens-global-mode 1)))
 #+END_SRC
 
 * Rainbow-delimiters
@@ -288,6 +292,7 @@
 (diminish 'vi-tilde-fringe-mode)
 (diminish 'global-whitespace-mode)
 (diminish 'subword-mode)
+(diminish 'git-gutter-mode)
 #+END_SRC
 
 * Ace-window
@@ -363,4 +368,10 @@
 * Highlight-line
   #+BEGIN_SRC emacs-lisp
   (global-hl-line-mode +1)
+  #+END_SRC
+* Git-gutter
+  #+BEGIN_SRC emacs-lisp
+  (use-package git-gutter
+  :ensure t)
+  (global-git-gutter-mode +1)
   #+END_SRC

@@ -90,8 +90,12 @@
 (add-hook 'org-mode-hook 'toc-org-enable)
 
 (use-package smartparens
-:ensure t)
-(add-hook 'prog-mode-hook 'smartparens-mode)
+  :ensure t
+  :diminish smartparens-mode
+  :config
+  (progn
+    (require 'smartparens-config)
+(smartparens-global-mode 1)))
 
 (use-package rainbow-delimiters
 :ensure t)

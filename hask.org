@@ -2011,3 +2011,200 @@
        #+CAPTION: Representation of the list spine
        #+NAME:   fig:list-spine
        [[list-spine.png]]
+
+*** Using GHCi's :sprint command
+    Prelude> blah = enumFromTo 'a' 'z'
+    Prelude> :sprint blah
+    Prelude> blah = _
+    - The blah = _ indicates that blah is totally unevaluated.
+
+    Prelude> take 1 blah
+    Prelude> "a"
+    Prelude> :sprint blah
+    Prelude> blah 'a' : _
+    - So we've evaluated a cons cell : and the first value 'a'.
+
+   Prelude> take 2 blah
+   Prelude> "ab"
+   Prelude> :sprint blah
+   Prelude> blah = 'a' : 'b' : _
+   - 'take 2 blah' forces evaluation of the second cons cell and the second value.
+
+   - The length function is only strict in the spine, meaning it only forces evaluation of the spine
+     of a list, not the values, something we can see if we try to find the length of a list of
+     undefined values. BUT we can't see with the :sprint command...
+
+*** Spines are evaluated independently of values
+    - Values in Haskell get reduced to weak head normal form. 'Normal form' means that the expression
+      is fully evaluated. 'Weak head normal form' means that the expression is only evaluated as
+      far as is necessary to reach a data constructor. (WHNF) (NF)
+      #+BEGIN_SRC haskell
+      (1, 2) -- WHNF & NF.. its fully evaluated
+
+      (1, 1 + 1) -- WHNF.. The (+) could be evaluated be hasn't been yet.
+
+      \x -> x * 10 -- WHNF & NF... This is in NF because it cannot be reduced further until the outer
+      --                          x -> ... has been applied. With nothing further to reduce, it is
+      --                          in normal form.
+
+      "Papu" ++ "chon" -- This string concatenation is in neither WHNF nor NF, this is because
+      --                  the outermost component of the expression is a function, (++), whose
+      --                  arguments are fully applied but it hasn't been evaluated.
+      -- Whereas, the following would be in WHNF but not NF:
+      (1, "Papu" ++ "chon")
+      #+END_SRC
+
+    - When we define a list and define all its values, it is in NF and all its values are known.
+      There's nothing left to evaluate at that point, example:
+
+      Prelude> let num :: [Int]; num = [1, 2, 3]
+      Prelude> :sprint num
+      num = [1,2,3]
+
+      - https://stackoverflow.com/questions/6872898/haskell-what-is-weak-head-normal-form
+
+** Transforming list of values
+   - map: apply a function to each member of a list.
+   - fmap: can be applied to data other than lists.
+     #+BEGIN_SRC haskell
+     map :: (a -> b) -> [a] -> [b]
+     fmap :: Functor f => (a -> b) -> f a -> f b
+     #+END_SRC
+   - Here's how map is defined in base:
+     #+BEGIN_SRC haskell
+     map :: (a -> b) -> [a] -> [b]
+     map _  []  =   []
+     -- [1] [2]     [3]
+     map f (x:xs)   = f x  :  map f xs
+     -- [4] [5]       [6] [7]  [8]
+     -- pag 503, 504
+     #+END_SRC
+
+     - How do we write out what map f does? Note, this order of evaluation doesn't represent the proper
+       nonstrict evaluation order, but does give an idea of what's going on:
+       #+BEGIN_SRC haskell
+       map (+1) [1,2,3]
+       -- desugared, (:) is infixr 5,
+       -- so it's right-associative
+       map (+1) (1 : (2 : (3 : [])))
+
+       -- Not an empty list, so second
+       -- pattern-match in map fires.
+       -- Apply (+1) to value, then map
+       (+1) 1 :
+         map (+1)
+           (2 : (3 : []))
+
+      -- Apply (+1) to the next value, cons onto
+      -- the result of mapping over the rest
+      (+1) 1 :
+        ((+1) 2 :
+          (map (+1)
+            (3 :[])))
+
+        -- Last time we'll trigger the
+        -- second-case of map
+        (+1) 1 :
+          ((+1) 2 :
+            ((+1) 3 :
+              (map (+1) [])))
+
+         -- Now we trigger the base-case that
+         -- handles empty lists and returns the
+         -- empty list.
+         (+1) 1 :
+           ((+1) 2 :
+             ((+1) 3 : []))
+
+       -- Now we reduce
+       2 : ((+1) 2 : ((+1) 3 : []))
+       2 : 3 : (+1) 3 : []
+       2 : 3 : 4 : [] == [2, 3, 4]
+
+
+       -- Using the syntactic sugar of lists, here's an approximation of what map is doing for us:
+       map f [1, 2, 3] == [f 1, f 2, f 3]
+
+       map (+1) [1, 2, 3]
+                [(+1) 1, (+1) 2, (+1) 3]
+                [2, 3, 4]
+
+      -- Or using spine syntax:
+      -- PAG 506, 507
+       #+END_SRC
+
+     - These representations do not account for nonstrict evaluation. Crucially, map doesn't traverse
+       the whole list and apply the function immediately. The functions is applied to the values you
+       force out of the list one by one.
+
+       Prelude> map (+1) [1, 2, 3]
+       [2, 3, 4]
+       -- The whole list was forced
+
+       Prelude> take 2 $ map (+1) [1, 3, undefined]
+       [2, 3]
+       -- The undefined value was never forced
+
+       #+BEGIN_SRC haskell
+       map fst [(2, 3), (4, 5), (6, 7)]
+       [2, 4, 6]
+
+       -- map a partially applied take function:
+       map (take 3) [[1..5], [1..5], [1..5]]
+       [[1,2,3],[1,2,3],[1,2,3]]
+
+       -- map if-then-else using anonymous function.
+       map (\x -> if x == 3 then (-x) else (x)) [1..10]
+       #+END_SRC
+** Filtering lists of values
+   - filter has the following definition:
+     #+BEGIN_SRC haskell
+     filter :: (a -> Bool) -> [a] -> [a]
+     filter _ [] = []
+     filter p (x:xs)
+       | p x = x : filter p xs
+       | otherwise = filter p xs
+     #+END_SRC
+     - Ex4.hs
+
+** Zipping lists
+   - Zipping lists is combining values from multiple lists into a single list.
+   - zipWith function allow you to use a combining function to produce a list of results from two
+     lists.
+
+   - Let's look at zip:
+     Prelude> :t zip
+     zip :: [a] -> [b] -> [(a,b)]
+
+     Prelude> zip [1,2,3] [4,5,6]
+     [(1,4), (2,5), (3,6)]
+
+     - zip stops as soon as one of the lists runs out of values:
+       Prelude> zip [1, 2] [4, 5, 6]
+       [(1,4), (2,5)]
+
+     - Will return an empty list if either of the lists is empty:
+       Predule> zip [] [1..1000]
+       []
+
+     - zip proceeds until the shortes list ends.
+       Prelude> zip ['a'] [1..10000000000]
+       [('a', 1)]
+
+       Prelude> zip [1..100] ['a'..'c']
+       [(1, 'a'), (2, 'b'), (3, 'c')]
+
+   - We can use unzip to recover the lists as they were before they were zipped:
+
+     Prelude> zip [1, 2, 3] [4, 5, 6]
+     [(1,4),(2,5),(3,6)]
+     Prelude> unzip $ zip [1,2,3] [4,5,6]
+     ([1,2,3], [4,5,6])
+     Prelude> fst $ unzip $ zip [1,2,3] [4,5,6]
+     [1,2,3]
+     Prelude> snd $ unzip $ zip [1,2,3] [4,5,6]
+     [4,5,6]
+
+     - information can be LOST in this process because zip must stop on the shortes list:
+       Prelude> snd $ unzip $ zip [1,2] [3,4,5]
+       [3,4]
