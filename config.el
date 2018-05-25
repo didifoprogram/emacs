@@ -186,6 +186,7 @@
 (diminish 'vi-tilde-fringe-mode)
 (diminish 'global-whitespace-mode)
 (diminish 'subword-mode)
+(diminish 'git-gutter-mode)
 
 (use-package ace-window
 :ensure t)
@@ -243,3 +244,7 @@
 (add-hook 'haskell-mode-hook 'subword-mode)
 
 (global-hl-line-mode +1)
+
+(use-package git-gutter
+:ensure t)
+(global-git-gutter-mode +1)
