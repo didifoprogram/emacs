@@ -2367,8 +2367,9 @@
    -- setup beginning of the expression
    foldr (\a b -> take 3 a ++ b) "" ["Pizza", "Apple", "Banana"]
    -- or
-   foldr ((++) . (\a b -> take 3 a))""
+   foldr ((++) . (\a -> take 3 a)) "" ["Pizza", "Apple", "Banana"]
    #+END_SRC
+
 ** Summary
    - Scans
      #+BEGIN_SRC haskell
@@ -2393,3 +2394,82 @@
              [] -> []
              x:xs -> scanl f (f q x) xs)
      #+END_SRC
+** Definitions
+   - A /fold/ is a higher-order function which, given a function to accumulate the results and
+     a recursive data structure, return the built up value. The term fold is typically used
+     with reference to collections of values referenced by a recursive datatype.
+
+   - A /catamorphism/ is a generalization of folds to arbitrary datatypes.
+     - notice a pattern:
+   #+BEGIN_SRC haskell
+   data Bool = False | True
+   bool :: a -> a -> Bool -> a
+
+   data Maybe a = Nothing | Just a
+   maybe :: b -> (a -> b) -> Maybe a -> b
+   #+END_SRC
+
+   - A /tail call/ is the final result of a funtion.
+     #+BEGIN_SRC haskell
+     f x y z = h (subFunction x y z)
+       where subFunction x y z = g x y z
+       -- h is the tail call
+     #+END_SRC
+
+   - Tail recursion
+     #+BEGIN_SRC haskell
+     f x y z = f (x - 1) y z
+     #+END_SRC
+* Chapter 11
+** What's a type and what's data?
+   - Types are static and resolve at compile time.
+   - Types are known before runtime, wheter through expicit declaration or type inference, and that's
+     what makes them static types.
+
+     type constructors -- compile-time
+
+     -------------------- phase separation
+
+     data constructors -- runtime
+** Data constructors arities
+   - Arity refers to the number of arguments a function or constructor takes.
+   - A function that takes no arguments is called /nullary/, a contraction of "null" and "-ary".
+   - Null means zero, "-ary" suffix means "of or pertaining to".
+   - Data constructors which take no arguments are also called nullary. Such as True and False,
+     are constants values at the term level.
+   - Data constructors that take one argument are called unary
+   - Data constructors that take more than one argument are called products.
+
+   - All of the following are valid data declarations:
+     #+BEGIN_SRC haskell
+     data Example0 = Example0 deriving (Eq, Show)
+
+     data Example1 = Example1 Int deriving (Eq, Show)
+
+     data Example2 = Example2 String Int deriving (Eq, Show) -- product
+     #+END_SRC
+** newtype
+   #+BEGIN_SRC haskell
+   newtype Goats = Goats Int deriving (Eq, Show) -- Goat is really an Int.
+   newtype Cows = Cows Int deriving (Eq, Show)
+
+   tooManyGoats :: Goats -> Bool
+   tooManyGoats (Goats n) = n > 42
+   #+END_SRC
+
+   - One key contrast between a newtype and a type alias is that you can define typeclass instances
+     for newtypes that differ from the instances for their underlying type. You can't do that
+     for type synonyms.
+
+     #+BEGIN_SRC haskell
+class TooMany a where
+  tooMany :: a -> Bool
+instance TooMany Int where
+  tooMany n = n > 42
+-- Basically Goats is an Int, and TooMany already has an Int instance, but with newtype we can
+-- have different behaviour, We can't do this if its a type synonym.
+newtype Goats = Goats Int deriving Show
+instance TooMany Goats where
+  tooMany (Goats n) = n > 43
+
+     #+end_src
