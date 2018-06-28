@@ -2625,5 +2625,71 @@ data Automobile = Null
    - Types can be generically polymorphic by taking type arguments, and can be applied at the
      type level:
      #+BEGIN_SRC haskell
-     
+     -- identical to (a,b,c,d)
+data Silly a b c d =
+  MkSilly a b c d deriving Show
+
+-- :k Silly
+-- Silly :: * -> * -> * -> * -> *
+
+-- :k Silly Int
+-- Silly Int :: * -> * -> * -> *
+
+-- :k Silly Int String
+-- Silly Int String :: * -> * -> *
+
+-- :k Silly Int String Bool
+-- Silly Int String Bool :: * -> *
+
+-- :k Silly Int String Bool String
+-- Silly Int String Bool String :: *
+
+-- identical to (a,b,c,d)
+-- :k (,,,)
+-- (,,,) :: * -> * -> * -> * -> *
+
+-- :k (Int, String, Bool, String)
+-- (Int, String, Bool, String) :: *
      #+END_SRC
+
+** Lists are polymorphic
+   #+BEGIN_SRC haskell
+   data [] a = [] | a : [a]
+
+   f :: [] Integer
+   f = [1]
+
+   s :: [] String
+   s = ["Hello"]
+
+   -- List type without using an infix constructor:
+   data List a = Nil | Cons a (List a)
+   oneItem = (Cons "item" Nil)
+   twoItems = (Cons "item2" oneItem)
+   #+END_SRC
+** Binary Tree
+   #+BEGIN_SRC haskell
+   data BinaryTree a = Leaf | Node (BinaryTree a) a (BinaryTree a) deriving (Eq, Ord, Show)
+   #+END_SRC
+** Inserting into trees
+** As-patterns
+   #+BEGIN_SRC haskell
+   f :: Show a => (a, b) -> IO (a, b)
+   f t@(a, _) = do
+     print a
+     return t
+   #+END_SRC
+** Definitions
+   1. A datatype is how we declare and create data for our functions to receive as inputs.
+   Datatype declarations begin with the keyword data. A datatype is made up of a type
+   constructor and zero or more data constructors which
+* Chapter 12
+** Signaling adversity
+   #+BEGIN_SRC haskell
+   ifEvenAdd2 :: Integer -> Integer
+   ifEvenAdd2 n = if even n then n+2 else ??? // what to return?
+
+   // better this way
+   ifEvenAdd2 :: Integer -> Maybe Integer
+   ifEvenAdd2 n = if even n then Just (n+2) else Nothing
+   #+END_SRC
