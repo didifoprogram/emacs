@@ -1,0 +1,253 @@
+* Basic Configs
+#+BEGIN_SRC emacs-lisp
+
+(menu-bar-mode -1)
+(tool-bar-mode -1)
+
+(setq make-backup-files nil
+    auto-save-default nil
+    visible-bell nil)
+(add-hook 'prog-mode-hook 'linum-mode)
+
+;; don't pop up font menu
+(global-set-key (kbd "s-t") '(lambda () (interactive)))
+
+; Kill buffer without confirmation
+(global-set-key (kbd "C-x k") 'kill-this-buffer)
+
+;; no bell
+(setq ring-bell-function 'ignore)
+
+;; Turn on recent file mode so that you can more easily switch to
+;; recently edited files when you first start emacs
+(setq recentf-save-file (concat user-emacs-directory ".recentf"))
+(require 'recentf)
+(recentf-mode 1)
+(setq recentf-max-menu-items 40)
+
+;; eldoc-mode shows documentation in the minibuffer when writing code
+;; http://www.emacswiki.org/emacs/ElDoc
+(add-hook 'emacs-lisp-mode-hook 'turn-on-eldoc-mode)
+(add-hook 'lisp-interaction-mode-hook 'turn-on-eldoc-mode)
+(add-hook 'ielm-mode-hook 'turn-on-eldoc-mode)
+#+END_SRC
+
+
+* Theme
+#+BEGIN_SRC emacs-lisp
+(use-package color-theme-sanityinc-tomorrow
+:ensure t)
+(load-theme 'sanityinc-tomorrow-eighties t)
+#+END_SRC
+
+
+* Font
+#+BEGIN_SRC emacs-lisp
+(set-default-font "Hack 12" nil t)
+#+END_SRC
+
+
+* Clojure Settings
+#+BEGIN_SRC emacs-lisp
+(add-hook 'clojure-mode-hook 'subword-mode)
+
+;; syntax hilighting for midje
+(add-hook 'clojure-mode-hook
+          (lambda ()
+            (setq inferior-lisp-program "lein repl")
+            (font-lock-add-keywords
+             nil
+             '(("(\\(facts?\\)"
+                (1 font-lock-keyword-face))
+               ("(\\(background?\\)"
+                (1 font-lock-keyword-face))))
+            (define-clojure-indent (fact 1))
+            (define-clojure-indent (facts 1))
+            (rainbow-delimiters-mode)))
+
+;;;;
+;; Cider
+;;;;
+
+;; provides minibuffer documentation for the code you're typing into the repl
+(add-hook 'cider-mode-hook 'eldoc-mode)
+
+;; go right to the REPL buffer when it's finished connecting
+(setq cider-repl-pop-to-buffer-on-connect t)
+
+;; When there's a cider error, show its buffer and switch to it
+(setq cider-show-error-buffer t)
+(setq cider-auto-select-error-buffer t)
+
+;; Where to store the cider history.
+(setq cider-repl-history-file "~/.emacs.d/cider-history")
+
+;; Wrap when navigating history.
+(setq cider-repl-wrap-history t)
+
+;; enable paredit in your REPL
+;;(add-hook 'cider-repl-mode-hook 'paredit-mode)
+
+;; Use clojure mode for other extensions
+(add-to-list 'auto-mode-alist '("\\.edn$" . clojure-mode))
+(add-to-list 'auto-mode-alist '("\\.boot$" . clojure-mode))
+(add-to-list 'auto-mode-alist '("\\.cljs.*$" . clojure-mode))
+(add-to-list 'auto-mode-alist '("lein-env" . enh-ruby-mode))
+
+#+END_SRC
+
+
+* Diminish
+#+BEGIN_SRC emacs-lisp
+(use-package diminish
+:ensure t)
+#+END_SRC
+
+
+* Packages
+** Which-key
+#+BEGIN_SRC emacs-lisp
+(use-package which-key
+:ensure t
+:diminish which-key-mode)
+(which-key-mode)
+#+END_SRC
+
+** Smartparens
+#+BEGIN_SRC emacs-lisp
+(use-package smartparens
+  :ensure t
+  :init
+  (bind-key "C-M-f" #'sp-forward-sexp smartparens-mode-map)
+  (bind-key "C-M-b" #'sp-backward-sexp smartparens-mode-map)
+  (bind-key "C-)" #'sp-forward-slurp-sexp smartparens-mode-map)
+  (bind-key "C-(" #'sp-backward-slurp-sexp smartparens-mode-map)
+  (bind-key "M-)" #'sp-forward-barf-sexp smartparens-mode-map)
+  (bind-key "M-(" #'sp-backward-barf-sexp smartparens-mode-map)
+  (bind-key "C-S-s" #'sp-splice-sexp)
+  (bind-key "C-M-<backspace>" #'backward-kill-sexp)
+  (bind-key "M-[" #'sp-backward-unwrap-sexp)
+  (bind-key "M-]" #'sp-unwrap-sexp)
+;;  (bind-key "C-M-S-<SPC>" (lambda () (interactive) (mark-sexp -1)))
+:diminish smartparens-mode
+:config
+  (smartparens-global-mode t)
+
+  (sp-pair "'" nil :actions :rem)
+  (sp-pair "`" nil :actions :rem)
+  (setq sp-highlight-pair-overlay nil))
+
+#+END_SRC
+** Rainbow-delimiters
+#+BEGIN_SRC emacs-lisp
+(use-package rainbow-delimiters
+:ensure t
+:diminish rainbow-delimeters-mode)
+(add-hook 'clojure-mode-hook #'rainbow-delimiters-mode)
+#+END_SRC
+
+** Org Bulets
+#+BEGIN_SRC emacs-lisp
+(use-package org-bullets
+:ensure t)
+(add-hook 'org-mode-hook 'org-bullets-mode)
+#+END_SRC
+** Clojure
+#+BEGIN_SRC emacs-lisp
+(use-package clojure-mode
+:ensure t)
+
+(use-package clojure-mode-extra-font-locking
+:ensure t)
+
+(use-package cider
+:ensure t
+:diminish cider-mode)
+#+END_SRC
+** Golden Ratio
+#+BEGIN_SRC emacs-lisp
+(use-package golden-ratio
+:ensure t
+:diminish golden-ratio-mode)
+(golden-ratio-mode 1)
+(setq golden-ratio-adjust-factor .8
+      golden-ratio-wide-adjust-factor .8)
+#+END_SRC
+** Swiper
+#+BEGIN_SRC emacs-lisp
+(use-package swiper
+:ensure t)
+#+END_SRC
+** Better defaults
+#+BEGIN_SRC emacs-lisp
+(use-package better-defaults
+  :ensure t)
+#+END_SRC
+** Ivy
+#+BEGIN_SRC emacs-lisp
+(use-package ivy :demand
+:diminish ivy-mode
+:config
+(setq ivy-use-virtual-buffers t
+ivy-count-format "%d/%d "))
+
+(ivy-mode 1)
+(setq ivy-use-virtual-buffers t)
+(setq enable-recursive-minibuffers t)
+(global-set-key "\C-s" 'swiper)
+(global-set-key (kbd "C-c C-r") 'ivy-resume)
+(global-set-key (kbd "<f6>") 'ivy-resume)
+(global-set-key (kbd "M-x") 'counsel-M-x)
+(global-set-key (kbd "C-x C-f") 'counsel-find-file)
+(global-set-key (kbd "C-x b") 'ivy-switch-buffer)
+(global-set-key (kbd "<f1> f") 'counsel-describe-function)
+(global-set-key (kbd "<f1> v") 'counsel-describe-variable)
+(global-set-key (kbd "<f1> l") 'counsel-find-library)
+(global-set-key (kbd "<f2> i") 'counsel-info-lookup-symbol)
+(global-set-key (kbd "<f2> u") 'counsel-unicode-char)
+(global-set-key (kbd "C-c g") 'counsel-git)
+(global-set-key (kbd "C-c j") 'counsel-git-grep)
+(global-set-key (kbd "C-c k") 'counsel-ag)
+(global-set-key (kbd "C-x l") 'counsel-locate)
+(global-set-key (kbd "C-S-o") 'counsel-rhythmbox)
+(define-key minibuffer-local-map (kbd "C-r") 'counsel-minibuffer-history)
+#+END_SRC
+** Ivy-Hydra
+#+BEGIN_SRC emacs-lisp
+(use-package ivy-hydra
+:ensure t)
+#+END_SRC
+** Counsel Projectile
+#+BEGIN_SRC emacs-lisp
+(use-package counsel-projectile
+:ensure t)
+(counsel-projectile-mode t)
+(define-key projectile-mode-map (kbd "C-c p") 'projectile-command-map)
+#+END_SRC
+** Counsel
+#+BEGIN_SRC emacs-lisp
+(use-package counsel
+:ensure t)
+
+
+#+END_SRC
+** Spaceline
+#+BEGIN_SRC emacs-lisp
+(use-package spaceline
+  :ensure t
+  :init
+  (setq powerline-default-separator 'arrow-fade)
+  :config
+  (require 'spaceline-config)
+  (spaceline-spacemacs-theme))
+#+END_SRC
+** Projectile
+#+BEGIN_SRC emacs-lisp
+(use-package projectile
+:ensure t
+:diminish projectile-mode
+:config
+(projectile-mode +1))
+;(define-key projectile-mode-map (kbd "s-p") 'projectile-command-map)
+;(define-key projectile-mode-map (kbd "C-c p") 'projectile-command-map)
+#+END_SRC
